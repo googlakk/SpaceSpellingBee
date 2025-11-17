@@ -57,6 +57,27 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        coin: {
+          DEFAULT: "hsl(var(--coin-gold))",
+        },
+        streak: {
+          DEFAULT: "hsl(var(--streak-orange))",
+        },
+        xp: {
+          DEFAULT: "hsl(var(--xp-teal))",
+        },
+        badge: {
+          DEFAULT: "hsl(var(--badge-pink))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success-green))",
+        },
+        error: {
+          DEFAULT: "hsl(var(--error-coral))",
+        },
+      },
+      fontFamily: {
+        sans: ['Fredoka', 'Quicksand', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
