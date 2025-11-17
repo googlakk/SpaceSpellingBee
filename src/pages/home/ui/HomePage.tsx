@@ -1,9 +1,10 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, Trophy, Star, Zap } from "lucide-react";
+import { Zap, Trophy } from "lucide-react";
+import { ROUTES } from "@/shared/config/routes";
 import beeHero from "@/assets/bee-hero.png";
 
-const Index = () => {
+export const HomePage = () => {
   const navigate = useNavigate();
 
   return (
@@ -51,7 +52,7 @@ const Index = () => {
             <Button 
               size="lg" 
               className="rounded-full text-lg px-8 py-6 bg-gradient-primary hover:opacity-90 transition-all hover:scale-105 shadow-medium"
-              onClick={() => navigate("/training")}
+              onClick={() => navigate(ROUTES.TRAINING)}
             >
               <Zap className="mr-2 h-5 w-5" />
               Start Training
@@ -122,5 +123,3 @@ const Index = () => {
     </div>
   );
 };
-
-export default Index;
