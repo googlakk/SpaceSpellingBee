@@ -5,4 +5,6 @@ export const ROUTES = {
   LEADERBOARD: '/leaderboard',
   PROFILE: '/profile',
   ADMIN: '/admin',
+  ADMIN_LOGIN: '/admin/login',
+  ADMIN_DASHBOARD: '/admin/dashboard',
 } as const;

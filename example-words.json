@@ -1,0 +1,42 @@
+[
+  {
+    "word": "apple",
+    "language": "en"
+  },
+  {
+    "word": "banana",
+    "language": "en"
+  },
+  {
+    "word": "cat",
+    "language": "en"
+  },
+  {
+    "word": "dog",
+    "language": "en"
+  },
+  {
+    "word": "elephant",
+    "language": "en"
+  },
+  {
+    "word": "яблоко",
+    "language": "ru"
+  },
+  {
+    "word": "банан",
+    "language": "ru"
+  },
+  {
+    "word": "кот",
+    "language": "ru"
+  },
+  {
+    "word": "собака",
+    "language": "ru"
+  },
+  {
+    "word": "слон",
+    "language": "ru"
+  }
+]

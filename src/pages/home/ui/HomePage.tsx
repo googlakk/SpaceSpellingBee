@@ -1,124 +1,164 @@
 import { Button } from "@/shared/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Zap, Trophy } from "lucide-react";
+import { Rocket, Zap, Trophy, Star, Sparkles, Shield, Target, Award } from "lucide-react";
 import { ROUTES } from "@/shared/config/routes";
-import beeHero from "@/assets/bee-hero.png";
 
 export const HomePage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-hero">
+    <div className="min-h-screen bg-gradient-cosmic stars-bg overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl animate-pulse-glow" />
+        <div className="absolute bottom-20 right-10 w-40 h-40 bg-secondary/10 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-accent/10 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '2s' }} />
+      </div>
+
       {/* Header */}
-      <header className="container mx-auto px-4 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="text-4xl animate-bounce-slow">🐝</div>
-          <h1 className="text-2xl font-bold text-primary">SpellingBee</h1>
-        </div>
-        <div className="flex gap-3">
-          <Button variant="outline" className="rounded-full">
-            Login
-          </Button>
-          <Button className="rounded-full bg-gradient-primary hover:opacity-90 transition-opacity">
-            Sign Up
-          </Button>
+      <header className="relative container mx-auto px-4 py-6">
+        <div className="glass-card rounded-2xl p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Rocket className="h-8 w-8 text-primary animate-bounce-subtle" />
+              <div className="absolute -top-1 -right-1">
+                <Sparkles className="h-4 w-4 text-accent animate-pulse" />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-glow-cyan" style={{ fontFamily: 'Orbitron' }}>
+                Intellect Pro School
+              </h1>
+              <p className="text-xs text-muted-foreground">Space Learning Platform</p>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              className="rounded-full border-primary/30 hover:border-primary hover:glow-cyan transition-all"
+            >
+              Login
+            </Button>
+            <Button className="rounded-full bg-gradient-primary hover:scale-105 glow-cyan transition-all">
+              Sign Up
+            </Button>
+          </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <main className="container mx-auto px-4 py-20">
-        <div className="text-center max-w-4xl mx-auto">
-          {/* Animated Mascot */}
-          <div className="relative inline-block mb-8">
-            <img 
-              src={beeHero} 
-              alt="Buzzy the Bee mascot" 
-              className="w-64 h-64 md:w-80 md:h-80 object-contain animate-float drop-shadow-2xl"
-            />
-            <div className="absolute -top-4 -right-4 text-4xl animate-wiggle">✨</div>
-            <div className="absolute -bottom-2 -left-4 text-3xl animate-bounce-slow">🌟</div>
+      <main className="relative container mx-auto px-4 py-12">
+        <div className="text-center max-w-5xl mx-auto">
+          {/* Hero Title */}
+          <div className="mb-8 animate-slide-down">
+            <div className="inline-block mb-4">
+              <div className="glass-card rounded-full px-6 py-2 inline-flex items-center gap-2">
+                <Star className="h-4 w-4 text-accent animate-spin-slow" />
+                <span className="text-sm font-medium text-accent">New Mission: Spelling Mastery</span>
+                <Star className="h-4 w-4 text-accent animate-spin-slow" />
+              </div>
+            </div>
+
+            <h2 className="text-6xl md:text-7xl font-bold mb-6 text-glow-cyan leading-tight" style={{ fontFamily: 'Orbitron' }}>
+              Master Words
+              <br />
+      
+            </h2>
+
+            <p className="text-xl md:text-2xl text-foreground/80 mb-12 max-w-2xl mx-auto leading-relaxed">
+              Embark on an <span className="text-primary font-semibold">intergalactic journey</span> of learning.
+              Master spelling across galaxies with AI-powered voice technology.
+            </p>
           </div>
 
-          {/* Hero Text */}
-          <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-primary bg-clip-text text-transparent">
-            Master Spelling Through Play!
-          </h2>
-          <p className="text-xl md:text-2xl text-foreground/80 mb-12 max-w-2xl mx-auto">
-            Join Buzzy the Bee on an exciting spelling adventure. Learn, practice, and compete with friends!
-          </p>
-
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Button 
-              size="lg" 
-              className="rounded-full text-lg px-8 py-6 bg-gradient-primary hover:opacity-90 transition-all hover:scale-105 shadow-medium"
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-slide-up">
+            <Button
+              size="lg"
+              className="rounded-full text-lg px-10 py-7 bg-gradient-primary hover:scale-110 glow-cyan transition-all group relative overflow-hidden"
               onClick={() => navigate(ROUTES.TRAINING)}
             >
-              <Zap className="mr-2 h-5 w-5" />
-              Start Training
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+              <Zap className="mr-2 h-6 w-6 group-hover:rotate-12 transition-transform" />
+              <span className="relative z-10">Launch Training</span>
             </Button>
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               variant="outline"
-              className="rounded-full text-lg px-8 py-6 hover:scale-105 transition-all"
+              className="rounded-full text-lg px-10 py-7 border-2 border-primary/30 hover:border-primary hover:bg-primary/10 hover:scale-110 transition-all group"
+              onClick={() => navigate(ROUTES.PRACTICE)}
             >
-              <Trophy className="mr-2 h-5 w-5" />
-              View Leaderboard
+              <Trophy className="mr-2 h-6 w-6 group-hover:rotate-12 transition-transform" />
+              Practice Mode
             </Button>
           </div>
 
           {/* Feature Cards */}
-          <div className="grid md:grid-cols-3 gap-6 mt-20">
-            <div className="bg-card rounded-3xl p-8 shadow-soft hover:shadow-medium transition-all hover:-translate-y-1">
-              <div className="text-5xl mb-4 animate-pulse-slow">🎮</div>
-              <h3 className="text-xl font-bold mb-2">Gamified Learning</h3>
-              <p className="text-muted-foreground">
-                Earn coins, unlock badges, and level up as you master new words
-              </p>
-            </div>
-
-            <div className="bg-card rounded-3xl p-8 shadow-soft hover:shadow-medium transition-all hover:-translate-y-1">
-              <div className="text-5xl mb-4 animate-bounce-slow">🔥</div>
-              <h3 className="text-xl font-bold mb-2">Streak System</h3>
-              <p className="text-muted-foreground">
-                Build your streak and unlock special rewards and power-ups
-              </p>
-            </div>
-
-            <div className="bg-card rounded-3xl p-8 shadow-soft hover:shadow-medium transition-all hover:-translate-y-1">
-              <div className="text-5xl mb-4 animate-wiggle">🌍</div>
-              <h3 className="text-xl font-bold mb-2">Multi-Language</h3>
-              <p className="text-muted-foreground">
-                Practice spelling in English and Kyrgyz with native audio
-              </p>
-            </div>
+          <div className="grid md:grid-cols-3 gap-6 mb-20">
+            {[
+              {
+                icon: Target,
+                title: "Adaptive Missions",
+                description: "AI-powered learning paths that adapt to your skill level",
+                color: "primary",
+                delay: "0s"
+              },
+              {
+                icon: Award,
+                title: "Galactic Achievements",
+                description: "Unlock badges, ranks, and special rewards as you progress",
+                color: "secondary",
+                delay: "0.2s"
+              },
+              {
+                icon: Shield,
+                title: "Multi-Dimensional",
+                description: "Practice in English, Kyrgyz and more with native pronunciation",
+                color: "accent",
+                delay: "0.4s"
+              }
+            ].map((feature, index) => (
+              <div
+                key={index}
+                className="glass-card rounded-3xl p-8 hover:glass-card-hover transition-all hover:-translate-y-2 group animate-scale-in"
+                style={{ animationDelay: feature.delay }}
+              >
+                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-${feature.color} mb-6 glow-${feature.color} group-hover:scale-110 transition-transform`}>
+                  <feature.icon className="h-8 w-8 text-background" />
+                </div>
+                <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Orbitron' }}>
+                  {feature.title}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
           </div>
 
-          {/* Stats Section */}
-          <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary mb-2">10K+</div>
-              <div className="text-muted-foreground">Words</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-accent mb-2">50+</div>
-              <div className="text-muted-foreground">Levels</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-secondary mb-2">100+</div>
-              <div className="text-muted-foreground">Badges</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-streak mb-2">5K+</div>
-              <div className="text-muted-foreground">Students</div>
-            </div>
-          </div>
+     
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="container mx-auto px-4 py-8 text-center text-muted-foreground">
-        <p>© 2024 SpellingBee Platform. Made with 💛 for young learners</p>
+      <footer className="relative container mx-auto px-4 py-12 text-center">
+        <div className="glass-card rounded-2xl p-6">
+          <p className="text-muted-foreground mb-4">
+            © 2024 Intellect Pro School. Powered by cosmic intelligence.
+          </p>
+          <div className="flex justify-center gap-4 text-sm text-muted-foreground">
+            <button className="hover:text-primary transition-colors">Terms</button>
+            <span>•</span>
+            <button className="hover:text-primary transition-colors">Privacy</button>
+            <span>•</span>
+            <button
+              className="hover:text-primary transition-colors"
+              onClick={() => navigate(ROUTES.ADMIN_LOGIN)}
+            >
+              Admin Portal
+            </button>
+          </div>
+        </div>
       </footer>
     </div>
   );

@@ -77,7 +77,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Fredoka', 'Quicksand', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Orbitron', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -101,10 +102,73 @@ export default {
             height: "0",
           },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0px) translateX(0px)" },
+          "33%": { transform: "translateY(-15px) translateX(10px)" },
+          "66%": { transform: "translateY(-5px) translateX(-10px)" },
+        },
+        pulseGlow: {
+          "0%, 100%": {
+            opacity: "1",
+            transform: "scale(1)",
+            boxShadow: "0 0 20px hsla(180 100% 50% / 0.5)",
+          },
+          "50%": {
+            opacity: "0.8",
+            transform: "scale(1.05)",
+            boxShadow: "0 0 40px hsla(180 100% 50% / 0.8)",
+          },
+        },
+        slideUp: {
+          from: {
+            opacity: "0",
+            transform: "translateY(20px)",
+          },
+          to: {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
+        slideDown: {
+          from: {
+            opacity: "0",
+            transform: "translateY(-20px)",
+          },
+          to: {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
+        scaleIn: {
+          from: {
+            opacity: "0",
+            transform: "scale(0.9)",
+          },
+          to: {
+            opacity: "1",
+            transform: "scale(1)",
+          },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        bounceSubtle: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "float": "float 6s ease-in-out infinite",
+        "pulse-glow": "pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "slide-up": "slideUp 0.5s ease-out",
+        "slide-down": "slideDown 0.5s ease-out",
+        "scale-in": "scaleIn 0.3s ease-out",
+        "shimmer": "shimmer 2s linear infinite",
+        "spin-slow": "spin 8s linear infinite",
+        "bounce-subtle": "bounceSubtle 2s ease-in-out infinite",
       },
     },
   },

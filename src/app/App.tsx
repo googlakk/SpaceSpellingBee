@@ -6,6 +6,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { HomePage } from "@/pages/home/ui/HomePage";
 import { TrainingPage } from "@/pages/training/ui/TrainingPage";
 import { PracticePage } from "@/pages/practice/ui/PracticePage";
+import { AdminLoginPage } from "@/pages/admin/ui/AdminLoginPage";
+import { AdminDashboardPage } from "@/pages/admin/ui/AdminDashboardPage";
 import NotFound from "@/pages/NotFound";
 import { ROUTES } from "@/shared/config/routes";
 
@@ -21,6 +23,8 @@ const App = () => (
           <Route path={ROUTES.HOME} element={<HomePage />} />
           <Route path={ROUTES.TRAINING} element={<TrainingPage />} />
           <Route path={ROUTES.PRACTICE} element={<PracticePage />} />
+          <Route path={ROUTES.ADMIN_LOGIN} element={<AdminLoginPage />} />
+          <Route path={ROUTES.ADMIN_DASHBOARD} element={<AdminDashboardPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
