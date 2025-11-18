@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Download, Smartphone } from 'lucide-react';
-import { shouldShowIOSInstallPrompt, promptInstallPWA, isPWA } from '@/registerSW';
+import { shouldShowIOSInstallPrompt, promptInstallPWA, isPWA, getInstallPrompt } from '@/registerSW';
 import {
   Dialog,
   DialogContent,
@@ -25,8 +25,8 @@ export const InstallButton = ({
 }: InstallButtonProps) => {
   const [showButton, setShowButton] = useState(false);
   const [showIOSDialog, setShowIOSDialog] = useState(false);
-  const [installPrompt, setInstallPrompt] = useState<(() => Promise<boolean>) | null>(null);
   const [isIOS, setIsIOS] = useState(false);
+  const [canInstall, setCanInstall] = useState(false);
 
   useEffect(() => {
     // Don't show if already installed as PWA
@@ -44,42 +44,60 @@ export const InstallButton = ({
       return;
     }
 
-    // For Android/Chrome
-    const prompt = promptInstallPWA();
-    setInstallPrompt(() => prompt);
-
-    // Listen for beforeinstallprompt event
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setShowButton(true);
+    // For Android/Chrome - check if install prompt is available
+    const checkInstallPrompt = () => {
+      const prompt = getInstallPrompt();
+      if (prompt) {
+        setCanInstall(true);
+        setShowButton(true);
+        console.log('✅ Install prompt is ready!');
+      }
     };
 
-    window.addEventListener('beforeinstallprompt', handler);
+    // Check immediately
+    checkInstallPrompt();
 
-    // Show button after a delay even if event hasn't fired yet
+    // Listen for custom event when install prompt becomes available
+    const handlePromptAvailable = () => {
+      console.log('📱 PWA install available event received');
+      checkInstallPrompt();
+    };
+
+    window.addEventListener('pwa-install-available', handlePromptAvailable);
+
+    // Show button after a delay even if event hasn't fired yet (for testing)
     const timer = setTimeout(() => {
       setShowButton(true);
     }, 2000);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener('pwa-install-available', handlePromptAvailable);
       clearTimeout(timer);
     };
   }, []);
 
   const handleInstall = async () => {
+    console.log('🔘 Install button clicked');
+    console.log('Platform:', isIOS ? 'iOS' : 'Android/Desktop');
+    console.log('Can install:', canInstall);
+
     if (isIOS) {
       // Show iOS instructions dialog
+      console.log('📱 Showing iOS instructions');
       setShowIOSDialog(true);
-    } else if (installPrompt) {
+    } else if (canInstall) {
       // Show Android/Chrome native install dialog
-      const accepted = await installPrompt();
+      console.log('🚀 Attempting to show native install dialog...');
+      const accepted = await promptInstallPWA();
       if (accepted) {
         setShowButton(false);
         console.log('✅ PWA installed successfully!');
+      } else {
+        console.log('❌ User cancelled installation');
       }
     } else {
       // Fallback: show instructions
+      console.log('⚠️ Install prompt not available, showing instructions');
       setShowIOSDialog(true);
     }
   };

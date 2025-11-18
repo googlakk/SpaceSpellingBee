@@ -1,0 +1,209 @@
+/* Performance optimizations based on device tier */
+
+/* ============================================
+   LOW-END DEVICE OPTIMIZATIONS
+   ============================================ */
+
+/* Disable expensive effects on low-end devices */
+.low-end-device .glass-card {
+  backdrop-filter: none !important;
+  background: rgba(10, 1, 24, 0.85) !important;
+}
+
+.low-end-device .backdrop-blur-xl {
+  backdrop-filter: none !important;
+}
+
+/* Simplify shadows */
+.low-end-device .shadow-large,
+.low-end-device .shadow-2xl {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Disable glow effects */
+.low-end-device .glow-cyan,
+.low-end-device .glow-pink,
+.low-end-device .glow-purple {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* Disable blur backgrounds */
+.low-end-device [class*="blur-"] {
+  filter: none !important;
+}
+
+/* Simplify animations */
+.low-end-device .animate-pulse-glow,
+.low-end-device .animate-shimmer,
+.low-end-device .animate-spin-slow {
+  animation: none !important;
+}
+
+/* Keep only essential animations */
+.low-end-device .animate-bounce-subtle {
+  animation: simple-bounce 2s ease-in-out infinite;
+}
+
+@keyframes simple-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* ============================================
+   REDUCED MOTION SUPPORT
+   ============================================ */
+
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* ============================================
+   MEDIUM PERFORMANCE TIER
+   ============================================ */
+
+.perf-medium .glass-card {
+  backdrop-filter: blur(8px) !important;
+}
+
+.perf-medium .animate-pulse-glow {
+  animation-duration: 3s !important;
+}
+
+/* ============================================
+   LOW PERFORMANCE TIER
+   ============================================ */
+
+.perf-low .glass-card {
+  backdrop-filter: none !important;
+  background: rgba(10, 1, 24, 0.9) !important;
+}
+
+.perf-low .glow-cyan,
+.perf-low .glow-pink,
+.perf-low .glow-purple {
+  box-shadow: none !important;
+}
+
+/* ============================================
+   PERFORMANCE OPTIMIZATIONS FOR ALL DEVICES
+   ============================================ */
+
+/* Use hardware acceleration for transforms */
+.animate-bounce-subtle,
+.animate-spin-slow,
+.animate-float,
+.hover\:scale-105:hover,
+.hover\:scale-110:hover {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Optimize backdrop filters */
+.glass-card {
+  will-change: backdrop-filter;
+  transform: translateZ(0);
+}
+
+/* Optimize shadows */
+.shadow-large,
+.shadow-2xl {
+  will-change: box-shadow;
+}
+
+/* Optimize animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================
+   TOUCH OPTIMIZATIONS
+   ============================================ */
+
+/* Better touch targets on mobile */
+@media (max-width: 768px) {
+  button,
+  a,
+  input,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Disable hover effects on touch devices */
+  @media (hover: none) {
+    .hover\:scale-105:hover,
+    .hover\:scale-110:hover,
+    .hover\:-translate-y-1:hover,
+    .hover\:-translate-y-2:hover {
+      transform: none !important;
+    }
+  }
+}
+
+/* ============================================
+   PREVENT LAYOUT SHIFTS
+   ============================================ */
+
+/* Contain layout shifts */
+.glass-card,
+.card {
+  contain: layout style paint;
+}
+
+/* ============================================
+   OPTIMIZE FONTS
+   ============================================ */
+
+/* Use font-display swap for better performance */
+@font-face {
+  font-family: 'Orbitron';
+  font-display: swap;
+}
+
+/* Disable text rendering optimization on low-end */
+.low-end-device * {
+  text-rendering: optimizeSpeed !important;
+  -webkit-font-smoothing: subpixel-antialiased !important;
+}
+
+/* ============================================
+   IMAGE OPTIMIZATIONS
+   ============================================ */
+
+img {
+  content-visibility: auto;
+  contain-intrinsic-size: 300px;
+}
+
+/* ============================================
+   SCROLL OPTIMIZATIONS
+   ============================================ */
+
+/* Smooth scrolling only on high-end devices */
+.perf-high {
+  scroll-behavior: smooth;
+}
+
+.perf-low,
+.perf-medium {
+  scroll-behavior: auto;
+}
+
+/* Optimize scroll containers */
+.overflow-y-auto,
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  will-change: scroll-position;
+}

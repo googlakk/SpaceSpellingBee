@@ -1,18 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
 import { X, Download, Smartphone } from 'lucide-react';
-import { shouldShowIOSInstallPrompt, promptInstallPWA } from '@/registerSW';
+import { shouldShowIOSInstallPrompt, promptInstallPWA, isPWA, getInstallPrompt } from '@/registerSW';
 
 export const PWAInstallPrompt = () => {
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
-  const [installPrompt, setInstallPrompt] = useState<(() => Promise<boolean>) | null>(null);
+  const [canInstall, setCanInstall] = useState(false);
 
   useEffect(() => {
     // Check if running as PWA
-    const isPWA = window.matchMedia('(display-mode: standalone)').matches;
-
-    if (isPWA) {
+    if (isPWA()) {
       return; // Already installed
     }
 
@@ -32,29 +30,36 @@ export const PWAInstallPrompt = () => {
       return () => clearTimeout(timer);
     }
 
-    // For Android/Chrome
-    const prompt = promptInstallPWA();
-    setInstallPrompt(() => prompt);
+    // For Android/Chrome - check if install prompt is available
+    const checkInstallPrompt = () => {
+      const prompt = getInstallPrompt();
+      if (prompt) {
+        setCanInstall(true);
+      }
+    };
 
-    // Listen for beforeinstallprompt event
-    const handler = (e: Event) => {
-      e.preventDefault();
+    // Check immediately
+    checkInstallPrompt();
+
+    // Listen for custom event when install prompt becomes available
+    const handlePromptAvailable = () => {
+      checkInstallPrompt();
       const hasSeenPrompt = localStorage.getItem('pwa-install-prompt-seen');
       if (!hasSeenPrompt) {
         setTimeout(() => setShowPrompt(true), 5000);
       }
     };
 
-    window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener('pwa-install-available', handlePromptAvailable);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener('pwa-install-available', handlePromptAvailable);
     };
   }, []);
 
   const handleInstall = async () => {
-    if (installPrompt) {
-      const accepted = await installPrompt();
+    if (canInstall) {
+      const accepted = await promptInstallPWA();
       if (accepted) {
         setShowPrompt(false);
         localStorage.setItem('pwa-install-prompt-seen', 'true');

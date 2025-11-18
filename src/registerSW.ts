@@ -1,3 +1,6 @@
+// Global variable to store the install prompt event
+let deferredPrompt: any = null;
+
 // Register Service Worker for PWA functionality
 export function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
@@ -37,12 +40,8 @@ export function registerServiceWorker() {
   } else {
     console.warn('⚠️ Service Workers are not supported in this browser.');
   }
-}
 
-// Optional: Prompt user to install PWA
-export function promptInstallPWA() {
-  let deferredPrompt: any = null;
-
+  // Catch the beforeinstallprompt event GLOBALLY
   window.addEventListener('beforeinstallprompt', (e) => {
     // Prevent the mini-infobar from appearing on mobile
     e.preventDefault();
@@ -50,32 +49,42 @@ export function promptInstallPWA() {
     // Stash the event so it can be triggered later
     deferredPrompt = e;
 
-    console.log('💡 PWA install prompt is available');
+    console.log('💡 PWA install prompt is available and saved globally!');
 
-    // Show custom install button or prompt
-    // You can add a custom UI element to trigger installation
+    // Dispatch custom event to notify components
+    window.dispatchEvent(new Event('pwa-install-available'));
   });
+}
 
-  // Function to show install prompt
-  return async () => {
-    if (!deferredPrompt) {
-      console.log('PWA install prompt not available');
-      return false;
-    }
+// Get the stored install prompt
+export function getInstallPrompt() {
+  return deferredPrompt;
+}
 
+// Function to show install prompt
+export async function promptInstallPWA() {
+  if (!deferredPrompt) {
+    console.log('⚠️ PWA install prompt not available');
+    return false;
+  }
+
+  try {
     // Show the install prompt
     deferredPrompt.prompt();
 
     // Wait for the user to respond to the prompt
     const { outcome } = await deferredPrompt.userChoice;
 
-    console.log(`User response to install prompt: ${outcome}`);
+    console.log(`✅ User response to install prompt: ${outcome}`);
 
     // Clear the deferredPrompt variable
     deferredPrompt = null;
 
     return outcome === 'accepted';
-  };
+  } catch (error) {
+    console.error('❌ Error showing install prompt:', error);
+    return false;
+  }
 }
 
 // Track PWA installation

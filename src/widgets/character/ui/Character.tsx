@@ -1,9 +1,11 @@
+import { memo } from 'react';
+
 interface CharacterProps {
   state?: "idle" | "happy" | "encouraging" | "celebrating";
   message?: string;
 }
 
-export const Character = ({
+export const Character = memo(({
   state = "idle",
   message,
 }: CharacterProps) => {
@@ -53,4 +55,4 @@ export const Character = ({
       )}
     </div>
   );
-};
+});
