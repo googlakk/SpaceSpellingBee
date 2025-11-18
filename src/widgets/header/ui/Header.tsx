@@ -2,6 +2,7 @@ import { Button } from "@/shared/ui/button";
 import { Coins, Flame, ChevronLeft, Rocket, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/shared/config/routes";
+import { InstallButton } from "@/components/InstallButton";
 
 interface HeaderProps {
   showBackButton?: boolean;
@@ -51,6 +52,15 @@ export const Header = ({
                 <span className="hidden md:inline">Back</span>
               </Button>
             )}
+
+            {/* Install PWA Button - Hidden on very small screens */}
+            <div className="hidden sm:block">
+              <InstallButton
+                variant="outline"
+                size="sm"
+                className="h-7 md:h-9 px-2 md:px-3 text-xs md:text-sm rounded-full glass-card border-secondary/30 hover:border-secondary hover:bg-secondary/10"
+              />
+            </div>
 
             {coins !== undefined && (
               <div className="flex items-center gap-1 md:gap-2 glass-card bg-coin/10 px-2 md:px-3 py-1 md:py-1.5 rounded-full border border-coin/30 glow-cyan">

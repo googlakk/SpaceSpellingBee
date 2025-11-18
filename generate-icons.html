@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Icon Generator - Spelling Bee</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        button {
+            background: linear-gradient(135deg, #00ffff 0%, #ff00ff 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        .preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .icon-item {
+            text-align: center;
+        }
+        .icon-item canvas {
+            border-radius: 20%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            height: auto;
+        }
+        .icon-item p {
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        .instructions {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .instructions ol {
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 PWA Icon Generator</h1>
+        <p style="text-align: center; margin-bottom: 20px;">
+            Generate all required icons for Intellect Pro School - Spelling Bee PWA
+        </p>
+
+        <button onclick="generateAllIcons()">🎨 Generate All Icons</button>
+
+        <div class="preview" id="preview"></div>
+
+        <div class="instructions">
+            <h3>📋 Instructions:</h3>
+            <ol>
+                <li>Click "Generate All Icons" button above</li>
+                <li>Right-click on each icon and select "Save image as..."</li>
+                <li>Save them in the <code>public</code> folder with the exact names shown</li>
+                <li>Icons will be used automatically by your PWA!</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+
+        function generateIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#0a0118');
+            gradient.addColorStop(0.5, '#1a0f2e');
+            gradient.addColorStop(1, '#0a0118');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+
+            // Draw stars
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            for (let i = 0; i < 20; i++) {
+                const x = Math.random() * size;
+                const y = Math.random() * size;
+                const radius = Math.random() * 2;
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Draw rocket emoji or icon
+            ctx.font = `${size * 0.5}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Add glow effect
+            ctx.shadowColor = '#00ffff';
+            ctx.shadowBlur = size * 0.1;
+            ctx.fillStyle = '#00ffff';
+            ctx.fillText('🚀', size / 2, size / 2);
+
+            // Add sparkle
+            ctx.font = `${size * 0.2}px Arial`;
+            ctx.fillStyle = '#ff00ff';
+            ctx.shadowColor = '#ff00ff';
+            ctx.shadowBlur = size * 0.05;
+            ctx.fillText('✨', size * 0.75, size * 0.25);
+
+            // Add border
+            ctx.strokeStyle = '#00ffff';
+            ctx.lineWidth = size * 0.02;
+            ctx.strokeRect(0, 0, size, size);
+
+            return canvas;
+        }
+
+        function generateAllIcons() {
+            const preview = document.getElementById('preview');
+            preview.innerHTML = '';
+
+            sizes.forEach(size => {
+                const canvas = generateIcon(size);
+                const container = document.createElement('div');
+                container.className = 'icon-item';
+
+                const label = document.createElement('p');
+                label.textContent = `icon-${size}x${size}.png`;
+
+                container.appendChild(canvas);
+                container.appendChild(label);
+
+                // Add download button
+                const downloadBtn = document.createElement('button');
+                downloadBtn.textContent = '⬇ Download';
+                downloadBtn.style.fontSize = '12px';
+                downloadBtn.style.padding = '5px 10px';
+                downloadBtn.onclick = () => downloadIcon(canvas, size);
+                container.appendChild(downloadBtn);
+
+                preview.appendChild(container);
+            });
+
+            alert('✅ Icons generated! Right-click to save each icon or use the download buttons.');
+        }
+
+        function downloadIcon(canvas, size) {
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `icon-${size}x${size}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        // Auto-generate on load
+        window.addEventListener('load', () => {
+            setTimeout(generateAllIcons, 500);
+        });
+    </script>
+</body>
+</html>

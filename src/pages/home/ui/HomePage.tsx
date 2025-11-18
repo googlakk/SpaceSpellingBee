@@ -2,6 +2,7 @@ import { Button } from "@/shared/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Rocket, Zap, Trophy, Star, Sparkles, Shield, Target, Award } from "lucide-react";
 import { ROUTES } from "@/shared/config/routes";
+import { InstallButton } from "@/components/InstallButton";
 
 export const HomePage = () => {
   const navigate = useNavigate();
@@ -93,6 +94,15 @@ export const HomePage = () => {
               <Trophy className="mr-2 h-5 w-5 md:h-6 md:w-6 group-hover:rotate-12 transition-transform" />
               Practice Mode
             </Button>
+          </div>
+
+          {/* Install PWA Button */}
+          <div className="flex justify-center mb-6 md:mb-10 px-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <InstallButton
+              variant="outline"
+              size="lg"
+              className="rounded-full text-sm md:text-base lg:text-lg px-6 md:px-8 lg:px-10 py-5 md:py-6 lg:py-7 border-2 border-secondary/30 hover:border-secondary hover:bg-secondary/10 hover:scale-105 md:hover:scale-110 transition-all group glass-card glow-purple"
+            />
           </div>
 
           {/* Feature Cards */}

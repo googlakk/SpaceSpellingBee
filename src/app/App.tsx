@@ -10,6 +10,7 @@ import { AdminLoginPage } from "@/pages/admin/ui/AdminLoginPage";
 import { AdminDashboardPage } from "@/pages/admin/ui/AdminDashboardPage";
 import NotFound from "@/pages/NotFound";
 import { ROUTES } from "@/shared/config/routes";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <PWAInstallPrompt />
       <BrowserRouter>
         <Routes>
           <Route path={ROUTES.HOME} element={<HomePage />} />
