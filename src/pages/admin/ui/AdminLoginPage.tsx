@@ -30,28 +30,33 @@ export const AdminLoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-100 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Admin Panel</CardTitle>
-          <CardDescription className="text-center">
+    <div className="h-screen flex items-center justify-center bg-gradient-cosmic stars-bg p-3 md:p-4">
+      <Card className="w-full max-w-md glass-card border-primary/20">
+        <CardHeader className="space-y-1 p-4 md:p-6">
+          <CardTitle className="text-xl md:text-2xl font-bold text-center text-glow-cyan font-display">Admin Panel</CardTitle>
+          <CardDescription className="text-center text-xs md:text-sm">
             Enter password to access admin dashboard
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+        <CardContent className="p-4 md:p-6 pt-0 md:pt-0">
+          <form onSubmit={handleLogin} className="space-y-3 md:space-y-4">
+            <div className="space-y-1.5 md:space-y-2">
+              <Label htmlFor="password" className="text-xs md:text-sm">Password</Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="Enter admin password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="h-10 md:h-11 text-sm md:text-base"
                 required
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full h-10 md:h-11 text-sm md:text-base rounded-full bg-gradient-primary hover:scale-105 glow-cyan transition-all"
+              disabled={isLoading}
+            >
               {isLoading ? 'Logging in...' : 'Login'}
             </Button>
           </form>

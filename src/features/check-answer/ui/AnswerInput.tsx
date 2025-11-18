@@ -24,9 +24,9 @@ export const AnswerInput = ({
   };
 
   return (
-    <div className="space-y-4">
-      <label className="text-sm font-medium flex items-center gap-2">
-        <Sparkles className="h-4 w-4 text-primary" />
+    <div className="space-y-2 md:space-y-3">
+      <label className="text-xs md:text-sm font-medium flex items-center justify-center gap-2">
+        <Sparkles className="h-3 w-3 md:h-4 md:w-4 text-primary" />
         Type your answer:
       </label>
       <Input
@@ -35,7 +35,7 @@ export const AnswerInput = ({
         onKeyPress={handleKeyPress}
         placeholder="Spell the word..."
         disabled={disabled}
-        className={`text-2xl text-center h-16 rounded-2xl border-4 transition-all ${
+        className={`text-xl md:text-2xl text-center h-12 md:h-14 rounded-xl md:rounded-2xl border-2 md:border-4 transition-all ${
           feedback === "correct"
             ? "border-success bg-success/10"
             : feedback === "incorrect"
@@ -47,7 +47,7 @@ export const AnswerInput = ({
       <Button
         onClick={onSubmit}
         disabled={!value || disabled}
-        className="w-full rounded-full h-14 text-lg bg-gradient-primary hover:opacity-90"
+        className="w-full rounded-full h-10 md:h-12 text-sm md:text-base bg-gradient-primary hover:opacity-90"
         size="lg"
       >
         Check Answer

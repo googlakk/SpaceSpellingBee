@@ -6,7 +6,8 @@
       "mcp__supabase__get_anon_key",
       "Bash(npm install:*)",
       "mcp__supabase__execute_sql",
-      "mcp__supabase__list_projects"
+      "mcp__supabase__list_projects",
+      "Bash(npm run build:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
