@@ -9,7 +9,8 @@
       "mcp__supabase__list_projects",
       "Bash(npm run build:*)",
       "mcp__ide__getDiagnostics",
-      "WebSearch"
+      "WebSearch",
+      "Bash(mkdir:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

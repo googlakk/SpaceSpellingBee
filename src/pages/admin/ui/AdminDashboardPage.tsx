@@ -10,6 +10,7 @@ import { AudioUpload } from '@/widgets/admin/audio-upload/ui/AudioUpload';
 import { WordAdd } from '@/widgets/admin/word-add/ui/WordAdd';
 import { ConfigManagement } from '@/widgets/admin/config/ui/ConfigManagement';
 import { AudioImport } from '@/widgets/admin/audio-import';
+import { AudioExport } from '@/widgets/admin/audio-export';
 
 export const AdminDashboardPage = () => {
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ export const AdminDashboardPage = () => {
 
       <div className="flex-1 container mx-auto px-3 md:px-4 py-3 md:py-6 overflow-y-auto">
         <Tabs defaultValue="config" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-7 gap-1 md:gap-0 max-w-6xl h-auto md:h-10 bg-muted/50 p-1">
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-8 gap-1 md:gap-0 max-w-6xl h-auto md:h-10 bg-muted/50 p-1">
             <TabsTrigger value="config" className="text-xs md:text-sm h-8 md:h-9">Config</TabsTrigger>
             <TabsTrigger value="languages" className="text-xs md:text-sm h-8 md:h-9">Languages</TabsTrigger>
             <TabsTrigger value="levels" className="text-xs md:text-sm h-8 md:h-9">
@@ -74,6 +75,10 @@ export const AdminDashboardPage = () => {
             <TabsTrigger value="audio-import" className="text-xs md:text-sm h-8 md:h-9">
               <span className="hidden md:inline">Import Audio</span>
               <span className="md:hidden">Multi</span>
+            </TabsTrigger>
+            <TabsTrigger value="audio-export" className="text-xs md:text-sm h-8 md:h-9">
+              <span className="hidden md:inline">Export Audio</span>
+              <span className="md:hidden">Export</span>
             </TabsTrigger>
           </TabsList>
 
@@ -103,6 +108,10 @@ export const AdminDashboardPage = () => {
 
           <TabsContent value="audio-import" className="mt-3 md:mt-6">
             <AudioImport />
+          </TabsContent>
+
+          <TabsContent value="audio-export" className="mt-3 md:mt-6">
+            <AudioExport />
           </TabsContent>
         </Tabs>
       </div>
