@@ -164,3 +164,81 @@ export function getAnimationDuration(baseMs: number): number {
       return baseMs;
   }
 }
+
+/**
+ * Connection-aware loading utilities
+ */
+export type ConnectionType = 'slow-2g' | '2g' | '3g' | '4g' | 'unknown';
+
+export function getConnectionType(): ConnectionType {
+  const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+
+  if (!connection) return 'unknown';
+
+  const effectiveType = connection.effectiveType;
+  return effectiveType || 'unknown';
+}
+
+export function isSlowConnection(): boolean {
+  const connectionType = getConnectionType();
+  return connectionType === 'slow-2g' || connectionType === '2g';
+}
+
+export function isFastConnection(): boolean {
+  const connectionType = getConnectionType();
+  return connectionType === '4g';
+}
+
+/**
+ * Check if data saver mode is enabled
+ */
+export function isDataSaverEnabled(): boolean {
+  const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+  return connection?.saveData === true;
+}
+
+/**
+ * Get optimal image quality based on connection and device
+ */
+export function getOptimalImageQuality(): number {
+  if (isDataSaverEnabled()) return 0.5;
+  if (isSlowConnection()) return 0.6;
+  if (isLowEndDevice()) return 0.7;
+  return 1.0;
+}
+
+/**
+ * Should preload resource based on connection
+ */
+export function shouldPreloadResource(): boolean {
+  return !isSlowConnection() && !isDataSaverEnabled() && !isLowEndDevice();
+}
+
+/**
+ * Get optimal fetch priority for resources
+ */
+export function getResourcePriority(): 'low' | 'high' | 'auto' {
+  if (isSlowConnection() || isDataSaverEnabled()) return 'high';
+  if (isLowEndDevice()) return 'high';
+  return 'auto';
+}
+
+/**
+ * Apply connection-aware optimizations
+ */
+export function applyConnectionOptimizations() {
+  const isSlowConn = isSlowConnection();
+  const dataSaver = isDataSaverEnabled();
+
+  if (isSlowConn || dataSaver) {
+    document.documentElement.classList.add('slow-connection');
+  }
+
+  if (dataSaver) {
+    document.documentElement.classList.add('data-saver');
+  }
+
+  console.log(`🌐 Connection Type: ${getConnectionType()}`);
+  console.log(`💾 Data Saver: ${dataSaver}`);
+  console.log(`🐌 Slow Connection: ${isSlowConn}`);
+}

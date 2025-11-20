@@ -9,6 +9,7 @@ import { WordsImport } from '@/widgets/admin/words-import/ui/WordsImport';
 import { AudioUpload } from '@/widgets/admin/audio-upload/ui/AudioUpload';
 import { WordAdd } from '@/widgets/admin/word-add/ui/WordAdd';
 import { ConfigManagement } from '@/widgets/admin/config/ui/ConfigManagement';
+import { AudioImport } from '@/widgets/admin/audio-import';
 
 export const AdminDashboardPage = () => {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ export const AdminDashboardPage = () => {
   }
 
   return (
-    <div className="h-screen bg-gradient-cosmic stars-bg flex flex-col overflow-hidden">
+    <div className="h-screen gradient-grid-bg flex flex-col overflow-hidden">
       <div className="flex-shrink-0 border-b glass-card backdrop-blur-xl shadow-large">
         <div className="container mx-auto px-3 md:px-4 py-2 md:py-3 flex justify-between items-center">
           <h1 className="text-base md:text-xl lg:text-2xl font-bold text-glow-cyan font-display">Admin Dashboard</h1>
@@ -51,7 +52,7 @@ export const AdminDashboardPage = () => {
 
       <div className="flex-1 container mx-auto px-3 md:px-4 py-3 md:py-6 overflow-y-auto">
         <Tabs defaultValue="config" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1 md:gap-0 max-w-5xl h-auto md:h-10 bg-muted/50 p-1">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-7 gap-1 md:gap-0 max-w-6xl h-auto md:h-10 bg-muted/50 p-1">
             <TabsTrigger value="config" className="text-xs md:text-sm h-8 md:h-9">Config</TabsTrigger>
             <TabsTrigger value="languages" className="text-xs md:text-sm h-8 md:h-9">Languages</TabsTrigger>
             <TabsTrigger value="levels" className="text-xs md:text-sm h-8 md:h-9">
@@ -69,6 +70,10 @@ export const AdminDashboardPage = () => {
             <TabsTrigger value="audio" className="text-xs md:text-sm h-8 md:h-9">
               <span className="hidden md:inline">Upload Audio</span>
               <span className="md:hidden">Audio</span>
+            </TabsTrigger>
+            <TabsTrigger value="audio-import" className="text-xs md:text-sm h-8 md:h-9">
+              <span className="hidden md:inline">Import Audio</span>
+              <span className="md:hidden">Multi</span>
             </TabsTrigger>
           </TabsList>
 
@@ -94,6 +99,10 @@ export const AdminDashboardPage = () => {
 
           <TabsContent value="audio" className="mt-3 md:mt-6">
             <AudioUpload />
+          </TabsContent>
+
+          <TabsContent value="audio-import" className="mt-3 md:mt-6">
+            <AudioImport />
           </TabsContent>
         </Tabs>
       </div>

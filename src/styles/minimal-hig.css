@@ -1,0 +1,578 @@
+/* ============================================
+   APPLE HUMAN INTERFACE GUIDELINES (HIG)
+   Minimal Design System for SpellingBee
+   Optimized for low-end devices
+   ============================================ */
+
+/* Apply by default to all pages */
+:root {
+  /* Apple System Colors - Clean and Simple */
+  --hig-primary: #007AFF;        /* iOS Blue */
+  --hig-success: #34C759;        /* iOS Green */
+  --hig-warning: #FF9500;        /* iOS Orange */
+  --hig-error: #FF3B30;          /* iOS Red */
+  --hig-secondary: #5856D6;      /* iOS Purple */
+
+  /* Neutral Grays - Apple Style */
+  --hig-gray-1: #F2F2F7;         /* Light background */
+  --hig-gray-2: #E5E5EA;         /* Subtle borders */
+  --hig-gray-3: #D1D1D6;         /* Disabled elements */
+  --hig-gray-4: #8E8E93;         /* Secondary text */
+  --hig-gray-5: #636366;         /* Tertiary text */
+  --hig-gray-6: #48484A;         /* Dark backgrounds */
+
+  /* Dark Mode Colors */
+  --hig-bg-primary: #000000;     /* True black for OLED */
+  --hig-bg-secondary: #1C1C1E;   /* Elevated surfaces */
+  --hig-bg-tertiary: #2C2C2E;    /* Cards and modals */
+
+  /* Text Colors */
+  --hig-text-primary: #FFFFFF;
+  --hig-text-secondary: rgba(235, 235, 245, 0.6);
+  --hig-text-tertiary: rgba(235, 235, 245, 0.3);
+
+  /* Spacing - Apple 8pt grid */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* Border Radius - Apple Style */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Shadows - Subtle, not neon */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.16);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.20);
+}
+
+/* ============================================
+   TYPOGRAPHY - San Francisco Style
+   ============================================ */
+
+.hig-design body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+               'Segoe UI', 'Roboto', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+
+.hig-design h1,
+.hig-design h2,
+.hig-design h3 {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ============================================
+   CLEAN BACKGROUND - No Cosmic Effects
+   ============================================ */
+
+.hig-design .bg-gradient-cosmic,
+.hig-design .stars-bg {
+  background: var(--hig-bg-primary) !important;
+  background-image: none !important;
+}
+
+.hig-design.light .bg-gradient-cosmic {
+  background: hsl(30 20% 96%) !important;  /* Светло-бежевый фон */
+}
+
+.hig-design .bg-gradient-cosmic::before {
+  display: none !important;
+}
+
+/* Remove all decorative background elements */
+.hig-design .fixed.inset-0.pointer-events-none {
+  display: none !important;
+}
+
+/* ============================================
+   CARDS - Simple, Clean, No Glass Effect
+   ============================================ */
+
+.hig-design .glass-card {
+  background: var(--hig-bg-secondary) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+/* Light theme cards - Dark Gray from image */
+.hig-design.light .glass-card {
+  background: hsl(220 13% 46%) !important;  /* Темно-серые карточки */
+  border: 1px solid hsl(220 13% 40%) !important;
+  color: white !important;
+}
+
+.hig-design .glass-card-hover {
+  background: var(--hig-bg-tertiary) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.hig-design.light .glass-card-hover {
+  background: hsl(220 13% 50%) !important;
+  border: 1px solid hsl(217 91% 60%) !important;  /* Синяя граница */
+  color: white !important;
+}
+
+/* ============================================
+   REMOVE ALL GLOW EFFECTS
+   ============================================ */
+
+.hig-design .glow-cyan,
+.hig-design .glow-purple,
+.hig-design .glow-pink,
+.hig-design [class*="glow-"] {
+  box-shadow: none !important;
+}
+
+.hig-design .text-glow-cyan,
+.hig-design .text-glow-purple,
+.hig-design .text-glow-pink,
+.hig-design [class*="text-glow-"] {
+  text-shadow: none !important;
+  color: var(--hig-text-primary) !important;
+}
+
+/* ============================================
+   SIMPLIFIED SHADOWS
+   ============================================ */
+
+.hig-design .shadow-soft {
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.hig-design .shadow-medium {
+  box-shadow: var(--shadow-md) !important;
+}
+
+.hig-design .shadow-large {
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.hig-design [class*="shadow-2xl"],
+.hig-design [class*="shadow-xl"] {
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* ============================================
+   BUTTONS - Apple Style
+   ============================================ */
+
+.hig-design button,
+.hig-design .button,
+.hig-design [role="button"] {
+  min-height: 44px !important;
+  min-width: 44px !important;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Primary Button */
+.hig-design .bg-gradient-primary {
+  background: var(--hig-primary) !important;
+  box-shadow: none !important;
+}
+
+.hig-design.light .bg-gradient-primary {
+  background: hsl(217 91% 60%) !important;  /* Яркий синий */
+  color: white !important;
+}
+
+.hig-design .bg-gradient-primary:hover {
+  background: #0051D5 !important;
+}
+
+.hig-design.light .bg-gradient-primary:hover {
+  background: hsl(217 91% 55%) !important;
+}
+
+.hig-design .bg-gradient-primary:active {
+  background: #004FC1 !important;
+  transform: scale(0.98);
+}
+
+/* Secondary Button */
+.hig-design .bg-gradient-secondary {
+  background: var(--hig-secondary) !important;
+  box-shadow: none !important;
+}
+
+.hig-design.light .bg-gradient-secondary {
+  background: hsl(220 13% 46%) !important;  /* Темно-серый */
+  color: white !important;
+}
+
+/* Success Button */
+.hig-design .bg-gradient-success {
+  background: var(--hig-success) !important;
+  box-shadow: none !important;
+}
+
+/* Remove shimmer effect from buttons */
+.hig-design .animate-shimmer,
+.hig-design button .absolute.inset-0 {
+  display: none !important;
+}
+
+/* ============================================
+   SIMPLIFIED ANIMATIONS - Subtle Only
+   ============================================ */
+
+.hig-design * {
+  /* Apple uses 0.3s for most transitions */
+  transition-duration: 0.3s !important;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Disable heavy animations */
+.hig-design .animate-pulse-glow,
+.hig-design .animate-float,
+.hig-design .animate-shimmer,
+.hig-design .animate-spin-slow {
+  animation: none !important;
+}
+
+/* Keep only subtle animations */
+.hig-design .animate-bounce-subtle {
+  animation: higBounce 1.5s ease-in-out infinite !important;
+}
+
+.hig-design .animate-slide-up,
+.hig-design .animate-slide-down,
+.hig-design .animate-scale-in {
+  animation-duration: 0.3s !important;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+@keyframes higBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Simplified hover effects - No scale transforms */
+.hig-design .hover\:scale-105:hover,
+.hig-design .hover\:scale-110:hover {
+  transform: none !important;
+  opacity: 0.9;
+}
+
+.hig-design .hover\:-translate-y-1:hover,
+.hig-design .hover\:-translate-y-2:hover {
+  transform: translateY(-2px) !important;
+}
+
+/* ============================================
+   COLORS - Clean Apple Palette
+   ============================================ */
+
+.hig-design .text-primary {
+  color: var(--hig-primary) !important;
+}
+
+.hig-design .text-secondary {
+  color: var(--hig-secondary) !important;
+}
+
+.hig-design .text-accent {
+  color: var(--hig-warning) !important;
+}
+
+.hig-design .text-success {
+  color: var(--hig-success) !important;
+}
+
+.hig-design .text-error {
+  color: var(--hig-error) !important;
+}
+
+.hig-design .text-muted-foreground {
+  color: var(--hig-text-secondary) !important;
+}
+
+/* ============================================
+   BORDERS - Simple and Clean
+   ============================================ */
+
+.hig-design .border-primary,
+.hig-design .border-primary\/30,
+.hig-design .border-primary\/20 {
+  border-color: rgba(0, 122, 255, 0.3) !important;
+}
+
+.hig-design .border-accent,
+.hig-design .border-accent\/30 {
+  border-color: rgba(255, 149, 0, 0.3) !important;
+}
+
+.hig-design .border-success,
+.hig-design .border-success\/30 {
+  border-color: rgba(52, 199, 89, 0.3) !important;
+}
+
+.hig-design .border-error,
+.hig-design .border-error\/30 {
+  border-color: rgba(255, 59, 48, 0.3) !important;
+}
+
+/* Remove holographic borders */
+.hig-design .border-holographic {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-image: none !important;
+}
+
+/* ============================================
+   REMOVE BLUR EFFECTS - Performance
+   ============================================ */
+
+.hig-design [class*="blur-"],
+.hig-design .backdrop-blur-xl {
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ============================================
+   TYPOGRAPHY SIZES - Apple Scale
+   ============================================ */
+
+.hig-design .text-xs { font-size: 12px; }
+.hig-design .text-sm { font-size: 14px; }
+.hig-design .text-base { font-size: 16px; }
+.hig-design .text-lg { font-size: 18px; }
+.hig-design .text-xl { font-size: 20px; }
+.hig-design .text-2xl { font-size: 24px; }
+.hig-design .text-3xl { font-size: 28px; }
+.hig-design .text-4xl { font-size: 32px; }
+.hig-design .text-5xl { font-size: 36px; }
+.hig-design .text-6xl { font-size: 40px; }
+.hig-design .text-7xl { font-size: 48px; }
+
+/* ============================================
+   INPUT FIELDS - Apple Style
+   ============================================ */
+
+.hig-design input,
+.hig-design textarea {
+  background: var(--hig-bg-tertiary) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--hig-text-primary) !important;
+  min-height: 44px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+}
+
+.hig-design input:focus,
+.hig-design textarea:focus {
+  border-color: var(--hig-primary) !important;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1) !important;
+}
+
+/* ============================================
+   PROGRESS BARS - Clean
+   ============================================ */
+
+.hig-design .progress-bar {
+  background: var(--hig-bg-tertiary) !important;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.hig-design .progress-bar-fill {
+  background: var(--hig-primary) !important;
+  border-radius: var(--radius-full);
+}
+
+/* ============================================
+   ICONS - Proper Sizing
+   ============================================ */
+
+.hig-design svg {
+  flex-shrink: 0;
+}
+
+/* ============================================
+   REMOVE DECORATIVE ELEMENTS
+   ============================================ */
+
+/* Hide emoji decorations in minimal mode */
+.hig-design .font-display {
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif !important;
+}
+
+/* ============================================
+   TOUCH TARGETS - 44pt Minimum (Apple HIG)
+   ============================================ */
+
+@media (max-width: 768px) {
+  .hig-design button,
+  .hig-design a[role="button"],
+  .hig-design [role="button"],
+  .hig-design input[type="button"],
+  .hig-design input[type="submit"] {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    padding: 12px 16px !important;
+  }
+}
+
+/* ============================================
+   SCROLLBAR - Minimal
+   ============================================ */
+
+.hig-design ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.hig-design ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.hig-design ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.hig-design ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================
+   MODALS & DIALOGS - Apple Style
+   ============================================ */
+
+.hig-design [role="dialog"],
+.hig-design .dialog-content {
+  background: var(--hig-bg-secondary) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* ============================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================ */
+
+/* Force GPU acceleration only where needed */
+.hig-design .will-change-transform {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Disable will-change on most elements to save memory */
+.hig-design * {
+  will-change: auto !important;
+}
+
+/* Only transform buttons on active */
+.hig-design button:active {
+  transform: scale(0.98);
+}
+
+/* ============================================
+   REDUCE REPAINTS
+   ============================================ */
+
+.hig-design .contain-layout {
+  contain: layout style paint;
+}
+
+/* ============================================
+   COLOR ADJUSTMENTS FOR READABILITY
+   ============================================ */
+
+.hig-design .text-foreground {
+  color: var(--hig-text-primary) !important;
+}
+
+/* Ensure sufficient contrast */
+.hig-design .bg-primary {
+  background: var(--hig-primary) !important;
+  color: white !important;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.hig-design .rounded-full {
+  border-radius: var(--radius-full) !important;
+}
+
+.hig-design .rounded-xl {
+  border-radius: var(--radius-xl) !important;
+}
+
+.hig-design .rounded-2xl {
+  border-radius: var(--radius-xl) !important;
+}
+
+.hig-design .rounded-3xl {
+  border-radius: var(--radius-xl) !important;
+}
+
+/* ============================================
+   DISABLE CONFETTI ON LOW-END
+   ============================================ */
+
+.hig-design canvas {
+  display: none !important;
+}
+
+/* ============================================
+   SPACING ADJUSTMENTS
+   ============================================ */
+
+.hig-design .p-2 { padding: var(--spacing-sm) !important; }
+.hig-design .p-3 { padding: var(--spacing-md) !important; }
+.hig-design .p-4 { padding: var(--spacing-md) !important; }
+.hig-design .p-6 { padding: var(--spacing-lg) !important; }
+.hig-design .p-8 { padding: var(--spacing-xl) !important; }
+
+.hig-design .m-2 { margin: var(--spacing-sm) !important; }
+.hig-design .m-3 { margin: var(--spacing-md) !important; }
+.hig-design .m-4 { margin: var(--spacing-md) !important; }
+.hig-design .m-6 { margin: var(--spacing-lg) !important; }
+.hig-design .m-8 { margin: var(--spacing-xl) !important; }
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+.hig-design :focus-visible {
+  outline: 2px solid var(--hig-primary);
+  outline-offset: 2px;
+}
+
+/* High contrast focus for better accessibility */
+.hig-design button:focus-visible,
+.hig-design a:focus-visible {
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.3) !important;
+  outline: none;
+}
+
+/* ============================================
+   PRINT OPTIMIZATIONS
+   ============================================ */
+
+@media print {
+  .hig-design * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+}

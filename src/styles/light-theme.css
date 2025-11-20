@@ -1,0 +1,308 @@
+/* ============================================
+   LIGHT THEME OVERRIDES - 2025 Modern Design
+   ============================================ */
+
+.light {
+  /* Background colors */
+  background-color: hsl(var(--background));
+}
+
+/* Light theme glass cards - White with gradient borders */
+.light .glass-card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 2px solid transparent !important;
+  background-clip: padding-box !important;
+  position: relative !important;
+  box-shadow: var(--shadow-medium) !important;
+  color: hsl(222 47% 11%) !important;
+}
+
+.light .glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(135deg, hsl(217 91% 60%), hsl(250 95% 65%), hsl(280 91% 60%));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.light .glass-card-hover {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 2px solid hsl(217 91% 60%) !important;
+  box-shadow: var(--shadow-large), var(--glow-blue) !important;
+  color: hsl(222 47% 11%) !important;
+}
+
+/* Light theme backgrounds - Soft gradient with grid */
+.light .bg-gradient-cosmic {
+  background: linear-gradient(135deg,
+    hsl(210 100% 98%),
+    hsl(250 100% 98%),
+    hsl(280 100% 98%)
+  ) !important;
+}
+
+.light .bg-gradient-cosmic::before {
+  background-image:
+    linear-gradient(to right, rgba(99, 102, 241, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.12) 1px, transparent 1px) !important;
+  background-size: 45px 45px !important;
+}
+
+/* Light theme text colors */
+.light .text-glow-blue,
+.light .text-glow-violet,
+.light .text-glow-purple {
+  text-shadow: none !important;
+}
+
+/* Light theme buttons - 2025 Gradients */
+.light .bg-gradient-primary {
+  background: linear-gradient(135deg,
+    hsl(217 91% 60%) 0%,
+    hsl(250 95% 65%) 50%,
+    hsl(280 91% 60%) 100%
+  ) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.light .bg-gradient-primary:hover {
+  background: linear-gradient(135deg,
+    hsl(217 91% 55%) 0%,
+    hsl(250 95% 60%) 50%,
+    hsl(280 91% 55%) 100%
+  ) !important;
+  box-shadow: var(--glow-blue) !important;
+}
+
+.light .bg-gradient-secondary {
+  background: linear-gradient(135deg,
+    hsl(280 91% 60%) 0%,
+    hsl(320 100% 60%) 100%
+  ) !important;
+  color: white !important;
+}
+
+.light .bg-gradient-secondary:hover {
+  background: linear-gradient(135deg,
+    hsl(280 91% 55%) 0%,
+    hsl(320 100% 55%) 100%
+  ) !important;
+  box-shadow: var(--glow-purple) !important;
+}
+
+/* Light theme borders */
+.light .border-primary\/30,
+.light .border-primary\/20 {
+  border-color: rgba(0, 122, 255, 0.15) !important;
+}
+
+.light .border-accent\/30 {
+  border-color: rgba(255, 149, 0, 0.15) !important;
+}
+
+.light .border-muted\/10 {
+  border-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Light theme glow effects - subtle shadows instead */
+.light .glow-cyan {
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.15) !important;
+}
+
+.light .glow-purple {
+  box-shadow: 0 2px 8px rgba(88, 86, 214, 0.15) !important;
+}
+
+.light .glow-pink {
+  box-shadow: 0 2px 8px rgba(255, 45, 85, 0.15) !important;
+}
+
+/* Light theme stars background - remove */
+.light .stars-bg {
+  background-image: none !important;
+}
+
+/* Light theme scrollbar */
+.light ::-webkit-scrollbar-track {
+  background: hsl(30 20% 96%);
+}
+
+.light ::-webkit-scrollbar-thumb {
+  background: hsl(220 13% 46%);  /* Темно-серый */
+  border-radius: 5px;
+}
+
+.light ::-webkit-scrollbar-thumb:hover {
+  background: hsl(220 13% 50%);
+}
+
+/* Light theme input fields */
+.light input,
+.light textarea {
+  background: white !important;
+  border: 1px solid hsl(220 13% 87%) !important;
+  color: hsl(220 13% 18%) !important;
+}
+
+.light input:focus,
+.light textarea:focus {
+  border-color: hsl(217 91% 60%) !important;  /* Синий фокус */
+  box-shadow: 0 0 0 3px hsla(217 91% 60% / 0.1) !important;
+}
+
+/* Light theme modal/dialog */
+.light [role="dialog"],
+.light .dialog-content {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Light theme progress bar */
+.light .progress-bar {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+.light .progress-bar-fill {
+  background: hsl(211 100% 50%) !important;
+}
+
+/* Light theme text colors - 2025 */
+.light .text-primary {
+  color: hsl(217 91% 60%) !important;  /* Bright Blue */
+}
+
+.light .text-secondary {
+  color: hsl(250 95% 65%) !important;  /* Violet */
+}
+
+.light .text-accent {
+  color: hsl(280 91% 60%) !important;  /* Purple */
+}
+
+.light .text-success {
+  color: hsl(142 71% 45%) !important;
+}
+
+.light .text-error {
+  color: hsl(0 84% 60%) !important;
+}
+
+.light .text-muted-foreground {
+  color: hsl(215 16% 47%) !important;
+}
+
+.light .text-foreground {
+  color: hsl(222 47% 11%) !important;  /* Deep Navy */
+}
+
+/* Light theme loader */
+.light .animate-spin {
+  color: hsl(211 100% 50%) !important;
+}
+
+/* Ensure high contrast text on colored backgrounds in light mode */
+.light .bg-gradient-primary,
+.light .bg-gradient-secondary,
+.light .bg-gradient-success {
+  color: white !important;
+}
+
+/* Light mode - reduce opacity on decorative elements */
+.light .animate-pulse-glow {
+  opacity: 0.6;
+}
+
+/* Light theme hover states */
+.light .hover\:border-primary:hover {
+  border-color: hsl(211 100% 50%) !important;
+}
+
+.light .hover\:border-accent:hover {
+  border-color: hsl(24 100% 50%) !important;
+}
+
+.light .hover\:bg-primary\/10:hover {
+  background-color: rgba(0, 122, 255, 0.1) !important;
+}
+
+.light .hover\:bg-accent\/10:hover {
+  background-color: rgba(255, 149, 0, 0.1) !important;
+}
+
+/* Light theme for disabled states */
+.light button:disabled {
+  opacity: 0.5;
+}
+
+/* Light theme border colors */
+.light .border-success {
+  border-color: hsl(142 71% 45%) !important;
+}
+
+.light .border-error {
+  border-color: hsl(0 84% 60%) !important;
+}
+
+.light .border-streak {
+  border-color: hsl(24 100% 50%) !important;
+}
+
+/* Light theme - better readability for small text */
+.light .text-xs,
+.light .text-sm {
+  color: hsl(215 16% 47%);
+}
+
+/* Light mode card states */
+.light .border-success\/30 {
+  border-color: rgba(52, 199, 89, 0.2) !important;
+}
+
+.light .border-error\/30 {
+  border-color: rgba(255, 59, 48, 0.2) !important;
+}
+
+/* Light mode specific adjustments for Olympic Mode */
+.light .text-5xl,
+.light .text-6xl,
+.light .text-7xl,
+.light .text-8xl {
+  color: hsl(220 13% 18%);  /* Темный текст для больших заголовков */
+  font-weight: 800;
+}
+
+/* Light mode - text on cards should be dark navy */
+.light .glass-card * {
+  color: hsl(222 47% 11%) !important;  /* Deep navy */
+}
+
+.light .glass-card .text-muted-foreground {
+  color: hsl(215 16% 47%) !important;  /* Muted gray */
+}
+
+.light .glass-card .text-primary {
+  color: hsl(217 91% 60%) !important;  /* Bright blue on cards */
+}
+
+.light .glass-card .text-secondary {
+  color: hsl(250 95% 65%) !important;  /* Violet on cards */
+}
+
+.light .glass-card .text-accent {
+  color: hsl(280 91% 60%) !important;  /* Purple on cards */
+}
+
+/* Override for buttons inside cards */
+.light .glass-card button {
+  color: white;
+}

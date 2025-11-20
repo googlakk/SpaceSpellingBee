@@ -5,68 +5,77 @@
 /* Performance Optimizations */
 @import './styles/performance.css';
 
-/* Intellect Pro School - Cosmic Sci-Fi Design System */
+/* Apple HIG Minimal Design */
+@import './styles/minimal-hig.css';
+
+/* Light Theme */
+@import './styles/light-theme.css';
+
+/* Gradient Grid Background - 2025 */
+@import './styles/gradient-grid.css';
+
+/* Intellect Pro School - Modern 2025 Design System */
 
 @layer base {
   :root {
-    /* Cosmic Dark Background */
-    --background: 240 15% 8%;
+    /* Modern 2025 - Deep Navy Base */
+    --background: 222 47% 11%;
     --foreground: 210 40% 98%;
 
     /* Glass-morphic Cards */
-    --card: 240 20% 12%;
+    --card: 217 33% 17%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 240 20% 12%;
+    --popover: 217 33% 17%;
     --popover-foreground: 210 40% 98%;
 
-    /* Neon Cyan Primary */
-    --primary: 180 100% 50%;
-    --primary-foreground: 240 15% 8%;
+    /* Bright Blue Primary (2025 Trend) */
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Electric Purple Secondary */
-    --secondary: 270 100% 65%;
-    --secondary-foreground: 210 40% 98%;
+    /* Vibrant Violet Secondary */
+    --secondary: 250 95% 65%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 240 15% 18%;
+    --muted: 217 33% 20%;
     --muted-foreground: 215 20% 65%;
 
-    /* Neon Pink Accent */
-    --accent: 320 100% 60%;
-    --accent-foreground: 210 40% 98%;
+    /* Electric Purple Accent */
+    --accent: 280 91% 60%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 240 20% 20%;
-    --input: 240 20% 18%;
-    --ring: 180 100% 50%;
+    --border: 217 33% 25%;
+    --input: 217 33% 20%;
+    --ring: 217 91% 60%;
 
     --radius: 1rem;
 
-    /* Cosmic Gamification Colors */
+    /* 2025 Gamification Colors */
     --coin-gold: 45 100% 58%;
     --streak-orange: 24 100% 58%;
-    --xp-teal: 180 100% 50%;
-    --badge-pink: 320 100% 60%;
+    --xp-cyan: 189 94% 53%;
+    --badge-purple: 280 91% 60%;
     --success-green: 142 71% 55%;
     --error-coral: 0 84% 60%;
 
-    /* Cosmic Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(180 100% 50%), hsl(270 100% 65%));
-    --gradient-secondary: linear-gradient(135deg, hsl(270 100% 65%), hsl(320 100% 60%));
-    --gradient-hero: linear-gradient(180deg, hsl(240 15% 8%), hsl(250 20% 12%), hsl(260 25% 16%));
-    --gradient-cosmic: radial-gradient(ellipse at 50% 0%, hsla(180 100% 50% / 0.2), transparent 50%),
-                       radial-gradient(ellipse at 0% 100%, hsla(320 100% 60% / 0.15), transparent 50%),
-                       radial-gradient(ellipse at 100% 100%, hsla(270 100% 65% / 0.15), transparent 50%);
-    --gradient-success: linear-gradient(135deg, hsl(142 71% 55%), hsl(180 100% 50%));
+    /* 2025 Modern Gradients - Blue → Violet → Purple → Pink */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(250 95% 65%) 50%, hsl(280 91% 60%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(280 91% 60%) 0%, hsl(320 100% 60%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(217 91% 60%), hsl(250 95% 65%), hsl(280 91% 60%));
+    --gradient-cosmic: radial-gradient(ellipse at 50% 0%, hsla(217 91% 60% / 0.3), transparent 50%),
+                       radial-gradient(ellipse at 0% 100%, hsla(280 91% 60% / 0.2), transparent 50%),
+                       radial-gradient(ellipse at 100% 100%, hsla(320 100% 60% / 0.2), transparent 50%);
+    --gradient-success: linear-gradient(135deg, hsl(142 71% 55%), hsl(189 94% 53%));
     --gradient-coin: linear-gradient(135deg, hsl(45 100% 58%), hsl(38 92% 50%));
-    --gradient-glass: linear-gradient(135deg, hsla(180 100% 50% / 0.1), hsla(270 100% 65% / 0.05));
+    --gradient-glass: linear-gradient(135deg, hsla(217 91% 60% / 0.1), hsla(250 95% 65% / 0.05));
 
-    /* Neon Glows & Shadows */
-    --glow-cyan: 0 0 20px hsla(180 100% 50% / 0.5), 0 0 40px hsla(180 100% 50% / 0.3);
-    --glow-purple: 0 0 20px hsla(270 100% 65% / 0.5), 0 0 40px hsla(270 100% 65% / 0.3);
-    --glow-pink: 0 0 20px hsla(320 100% 60% / 0.5), 0 0 40px hsla(320 100% 60% / 0.3);
+    /* Modern Glows & Shadows */
+    --glow-blue: 0 0 20px hsla(217 91% 60% / 0.5), 0 0 40px hsla(217 91% 60% / 0.3);
+    --glow-violet: 0 0 20px hsla(250 95% 65% / 0.5), 0 0 40px hsla(250 95% 65% / 0.3);
+    --glow-purple: 0 0 20px hsla(280 91% 60% / 0.5), 0 0 40px hsla(280 91% 60% / 0.3);
     --shadow-soft: 0 4px 20px hsla(0 0% 0% / 0.4);
     --shadow-medium: 0 8px 30px hsla(0 0% 0% / 0.5);
     --shadow-large: 0 20px 60px hsla(0 0% 0% / 0.6);
@@ -86,25 +95,65 @@
   }
 
   .light {
-    --background: 204 100% 97%;
-    --foreground: 220 20% 20%;
-    --card: 0 0% 100%;
-    --card-foreground: 220 20% 20%;
+    /* Light Mode - 2025 Modern Soft Gradient */
+    --background: 210 100% 98%;         /* Very light blue-white */
+    --foreground: 222 47% 11%;          /* Deep navy text */
+
+    /* Glass-morphic Cards */
+    --card: 0 0% 100%;                  /* White cards with gradient borders */
+    --card-foreground: 222 47% 11%;     /* Deep navy text on cards */
+
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 20%;
-    --primary: 180 100% 40%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Bright Blue Primary (2025 Trend) */
+    --primary: 217 91% 60%;             /* Bright Blue #3B82F6 */
     --primary-foreground: 0 0% 100%;
-    --secondary: 270 80% 55%;
+
+    /* Vibrant Violet Secondary */
+    --secondary: 250 95% 65%;           /* Violet */
     --secondary-foreground: 0 0% 100%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 320 80% 50%;
+
+    --muted: 210 100% 95%;              /* Very light blue-gray */
+    --muted-foreground: 215 16% 47%;    /* Medium gray text */
+
+    /* Electric Purple Accent */
+    --accent: 280 91% 60%;              /* Purple */
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
+
+    --destructive: 0 84% 60%;           /* Red for errors */
     --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 180 100% 40%;
+
+    --border: 217 91% 92%;              /* Light blue borders */
+    --input: 0 0% 100%;                 /* White input */
+    --ring: 217 91% 60%;                /* Blue focus */
+
+    /* 2025 Gamification Colors for Light Mode */
+    --coin-gold: 45 93% 47%;
+    --streak-orange: 24 95% 53%;        /* Orange */
+    --xp-cyan: 189 94% 53%;             /* Cyan */
+    --badge-purple: 280 91% 60%;        /* Purple */
+    --success-green: 142 71% 45%;
+    --error-coral: 0 84% 60%;
+
+    /* 2025 Light Gradients - Soft Blue → Violet → Purple */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(250 95% 65%) 50%, hsl(280 91% 60%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(280 91% 60%) 0%, hsl(320 100% 60%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(210 100% 98%), hsl(250 100% 98%), hsl(280 100% 98%));
+    --gradient-cosmic: radial-gradient(ellipse at 50% 0%, hsla(217 91% 60% / 0.08), transparent 50%),
+                       radial-gradient(ellipse at 0% 100%, hsla(280 91% 60% / 0.06), transparent 50%),
+                       radial-gradient(ellipse at 100% 100%, hsla(320 100% 60% / 0.06), transparent 50%);
+    --gradient-success: linear-gradient(135deg, hsl(142 71% 45%), hsl(189 94% 53%));
+    --gradient-coin: linear-gradient(135deg, hsl(45 93% 47%), hsl(38 92% 50%));
+    --gradient-glass: linear-gradient(135deg, hsla(217 91% 60% / 0.05), hsla(250 95% 65% / 0.03));
+
+    /* Subtle Shadows for Light Mode */
+    --glow-blue: 0 2px 16px hsla(217 91% 60% / 0.15);
+    --glow-violet: 0 2px 16px hsla(250 95% 65% / 0.15);
+    --glow-purple: 0 2px 16px hsla(280 91% 60% / 0.15);
+    --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 2px 8px rgba(0, 0, 0, 0.10);
+    --shadow-large: 0 8px 24px rgba(0, 0, 0, 0.12);
   }
 }
 
@@ -163,29 +212,36 @@
     -webkit-backdrop-filter: blur(20px);
   }
 
-  /* Neon Glow Effects */
-  .glow-cyan {
-    box-shadow: var(--glow-cyan);
+  /* 2025 Modern Glow Effects */
+  .glow-blue {
+    box-shadow: var(--glow-blue);
+  }
+
+  .glow-violet {
+    box-shadow: var(--glow-violet);
   }
 
   .glow-purple {
     box-shadow: var(--glow-purple);
   }
 
-  .glow-pink {
-    box-shadow: var(--glow-pink);
+  .text-glow-blue {
+    text-shadow: 0 0 10px hsla(217 91% 60% / 0.8), 0 0 20px hsla(217 91% 60% / 0.4);
   }
 
-  .text-glow-cyan {
-    text-shadow: 0 0 10px hsla(180 100% 50% / 0.8), 0 0 20px hsla(180 100% 50% / 0.4);
+  .text-glow-violet {
+    text-shadow: 0 0 10px hsla(250 95% 65% / 0.8), 0 0 20px hsla(250 95% 65% / 0.4);
   }
 
   .text-glow-purple {
-    text-shadow: 0 0 10px hsla(270 100% 65% / 0.8), 0 0 20px hsla(270 100% 65% / 0.4);
+    text-shadow: 0 0 10px hsla(280 91% 60% / 0.8), 0 0 20px hsla(280 91% 60% / 0.4);
   }
 
-  .text-glow-pink {
-    text-shadow: 0 0 10px hsla(320 100% 60% / 0.8), 0 0 20px hsla(320 100% 60% / 0.4);
+  /* Light mode - no glow for text */
+  .light .text-glow-blue,
+  .light .text-glow-violet,
+  .light .text-glow-purple {
+    text-shadow: none;
   }
 
   /* Glass-morphism Card */
@@ -259,25 +315,30 @@
     box-shadow: var(--shadow-large);
   }
 
-  /* Holographic border effect */
+  /* Holographic border effect - 2025 */
   .border-holographic {
     border-image: linear-gradient(135deg,
-      hsl(180 100% 50%),
-      hsl(270 100% 65%),
+      hsl(217 91% 60%),
+      hsl(250 95% 65%),
+      hsl(280 91% 60%),
       hsl(320 100% 60%)
     ) 1;
   }
 
-  /* Stars background */
+  /* Stars background - 2025 */
   .stars-bg {
     background-image:
-      radial-gradient(2px 2px at 20px 30px, hsla(180 100% 80% / 0.8), transparent),
-      radial-gradient(2px 2px at 60px 70px, hsla(270 100% 80% / 0.6), transparent),
-      radial-gradient(1px 1px at 50px 50px, hsla(320 100% 80% / 0.4), transparent),
-      radial-gradient(1px 1px at 130px 80px, hsla(180 100% 80% / 0.5), transparent),
-      radial-gradient(2px 2px at 90px 10px, hsla(270 100% 80% / 0.7), transparent);
+      radial-gradient(2px 2px at 20px 30px, hsla(217 91% 70% / 0.8), transparent),
+      radial-gradient(2px 2px at 60px 70px, hsla(250 95% 75% / 0.6), transparent),
+      radial-gradient(1px 1px at 50px 50px, hsla(280 91% 70% / 0.4), transparent),
+      radial-gradient(1px 1px at 130px 80px, hsla(217 91% 70% / 0.5), transparent),
+      radial-gradient(2px 2px at 90px 10px, hsla(250 95% 75% / 0.7), transparent);
     background-size: 200px 200px;
     background-repeat: repeat;
+  }
+
+  .light .stars-bg {
+    display: none;
   }
 }
 
@@ -343,21 +404,35 @@
   50% { transform: translateY(-10px); }
 }
 
-/* Scrollbar styling */
+/* Scrollbar styling - 2025 Modern */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(240 20% 12%);
+  background: hsl(222 47% 11%);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, hsl(180 100% 50%), hsl(270 100% 65%));
+  background: linear-gradient(180deg, hsl(217 91% 60%), hsl(250 95% 65%), hsl(280 91% 60%));
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, hsl(180 100% 60%), hsl(270 100% 75%));
+  background: linear-gradient(180deg, hsl(217 91% 65%), hsl(250 95% 70%), hsl(280 91% 65%));
+}
+
+/* Light mode scrollbar */
+.light ::-webkit-scrollbar-track {
+  background: hsl(210 100% 98%);
+}
+
+.light ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, hsl(217 91% 60%), hsl(250 95% 65%));
+  border-radius: 5px;
+}
+
+.light ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, hsl(217 91% 55%), hsl(250 95% 60%));
 }

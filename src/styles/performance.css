@@ -7,17 +7,20 @@
 /* Disable expensive effects on low-end devices */
 .low-end-device .glass-card {
   backdrop-filter: none !important;
-  background: rgba(10, 1, 24, 0.85) !important;
+  background: rgba(10, 1, 24, 0.95) !important;
 }
 
 .low-end-device .backdrop-blur-xl {
   backdrop-filter: none !important;
 }
 
-/* Simplify shadows */
+/* Simplify shadows - remove all shadows on low-end */
 .low-end-device .shadow-large,
-.low-end-device .shadow-2xl {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+.low-end-device .shadow-2xl,
+.low-end-device .shadow-xl,
+.low-end-device .shadow-lg,
+.low-end-device [class*="shadow-"] {
+  box-shadow: none !important;
 }
 
 /* Disable glow effects */
@@ -33,21 +36,28 @@
   filter: none !important;
 }
 
-/* Simplify animations */
-.low-end-device .animate-pulse-glow,
-.low-end-device .animate-shimmer,
-.low-end-device .animate-spin-slow {
+/* Disable ALL animations on low-end devices */
+.low-end-device *,
+.low-end-device *::before,
+.low-end-device *::after {
   animation: none !important;
+  transition: none !important;
 }
 
-/* Keep only essential animations */
-.low-end-device .animate-bounce-subtle {
-  animation: simple-bounce 2s ease-in-out infinite;
+/* Replace gradients with solid colors on low-end */
+.low-end-device [class*="bg-gradient"] {
+  background-image: none !important;
 }
 
-@keyframes simple-bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+/* Disable transforms on hover for low-end */
+.low-end-device [class*="hover:scale-"],
+.low-end-device [class*="hover:translate-"] {
+  transform: none !important;
+}
+
+/* Simplified confetti for low-end (use CSS instead of canvas) */
+.low-end-device canvas {
+  display: none !important;
 }
 
 /* ============================================
@@ -185,6 +195,13 @@
 img {
   content-visibility: auto;
   contain-intrinsic-size: 300px;
+  loading: lazy;
+  decoding: async;
+}
+
+/* Simplify image rendering on low-end */
+.low-end-device img {
+  image-rendering: -webkit-optimize-contrast;
 }
 
 /* ============================================
@@ -206,4 +223,182 @@ img {
 .overflow-x-auto {
   -webkit-overflow-scrolling: touch;
   will-change: scroll-position;
+}
+
+/* ============================================
+   AGGRESSIVE LOW-END OPTIMIZATIONS
+   ============================================ */
+
+/* Simplify paint operations on low-end */
+.low-end-device * {
+  contain: layout style;
+}
+
+/* Disable expensive CSS features */
+.low-end-device [class*="opacity-"],
+.low-end-device [class*="mix-blend-"] {
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+}
+
+/* Remove decorative elements on low-end */
+.low-end-device [class*="decoration-"],
+.low-end-device [class*="ring-"] {
+  text-decoration: none !important;
+  box-shadow: none !important;
+}
+
+/* Disable transforms except translate for positioning */
+.low-end-device [class*="rotate-"],
+.low-end-device [class*="skew-"],
+.low-end-device [class*="scale-"] {
+  transform: none !important;
+}
+
+/* Optimize buttons and interactive elements */
+.low-end-device button,
+.low-end-device a,
+.low-end-device [role="button"] {
+  contain: content;
+  transform: translateZ(0);
+}
+
+/* Reduce repaint on input focus */
+.low-end-device input:focus,
+.low-end-device textarea:focus {
+  outline-offset: 0;
+  box-shadow: none !important;
+}
+
+/* ============================================
+   CONNECTION-AWARE LOADING
+   ============================================ */
+
+/* Disable autoplay on slow connections */
+@media (prefers-reduced-data: reduce) {
+  video,
+  audio {
+    preload: none;
+  }
+
+  /* Disable animations on data saver mode */
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ============================================
+   AGGRESSIVE CONTAINMENT FOR COMPONENTS
+   ============================================ */
+
+/* Contain card components */
+.low-end-device [class*="card"],
+.low-end-device [class*="dialog"],
+.low-end-device [class*="modal"],
+.low-end-device [class*="popover"] {
+  contain: layout style paint;
+}
+
+/* Contain list items */
+.low-end-device li,
+.low-end-device [role="listitem"] {
+  contain: layout style;
+}
+
+/* ============================================
+   GPU ACCELERATION CONTROL
+   ============================================ */
+
+/* Disable will-change on low-end to prevent over-compositing */
+.low-end-device * {
+  will-change: auto !important;
+}
+
+/* Only use GPU for critical transforms */
+.low-end-device [class*="translate-"] {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* ============================================
+   VIEWPORT OPTIMIZATIONS
+   ============================================ */
+
+/* Optimize off-screen rendering */
+.low-end-device [data-state="closed"],
+.low-end-device [hidden] {
+  content-visibility: hidden;
+  contain: strict;
+}
+
+/* ============================================
+   SLOW CONNECTION OPTIMIZATIONS
+   ============================================ */
+
+/* Disable animations and transitions on slow connections */
+.slow-connection *,
+.slow-connection *::before,
+.slow-connection *::after {
+  animation-duration: 0.1s !important;
+  transition-duration: 0.1s !important;
+}
+
+/* Disable background images on slow connections */
+.slow-connection [class*="bg-gradient"],
+.slow-connection .stars-bg::before,
+.slow-connection .stars-bg::after {
+  background-image: none !important;
+}
+
+/* Simplify effects on slow connections */
+.slow-connection .glass-card {
+  backdrop-filter: none !important;
+  background: rgba(10, 1, 24, 0.95) !important;
+}
+
+/* Remove shadows on slow connections */
+.slow-connection [class*="shadow-"],
+.slow-connection [class*="glow-"] {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* Disable canvas animations on slow connections */
+.slow-connection canvas {
+  display: none !important;
+}
+
+/* ============================================
+   DATA SAVER MODE
+   ============================================ */
+
+/* More aggressive optimizations for data saver mode */
+.data-saver * {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Reduce image quality hint for browsers that support it */
+.data-saver img {
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Disable autoplay and preload */
+.data-saver video,
+.data-saver audio {
+  preload: none;
+}
+
+/* Remove decorative elements */
+.data-saver [class*="decoration-"],
+.data-saver [class*="blur-"] {
+  display: none !important;
+}
+
+/* Simplify all visual effects */
+.data-saver .glass-card,
+.data-saver [class*="bg-gradient"] {
+  background: rgba(10, 1, 24, 0.95) !important;
+  backdrop-filter: none !important;
 }
