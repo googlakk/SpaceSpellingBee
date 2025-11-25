@@ -10,7 +10,8 @@
       "Bash(npm run build:*)",
       "mcp__ide__getDiagnostics",
       "WebSearch",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "WebFetch(domain:platform.openai.com)"
     ]
   },
   "enableAllProjectMcpServers": true,

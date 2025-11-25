@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { supabase, Level, Sublevel, Language } from '@/shared/api/supabase';
-import { generateSpeech } from '@/shared/api/elevenlabs';
+import { generateSpeech, normalizeVoiceSettings } from '@/shared/api/openai-tts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Loader2, Trash2 } from 'lucide-react';
+import { Plus, Loader2, Trash2, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const WordAdd = () => {
@@ -26,6 +26,7 @@ export const WordAdd = () => {
   // Word list state
   const [words, setWords] = useState<any[]>([]);
   const [loadingWords, setLoadingWords] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     loadLanguages();
@@ -51,6 +52,7 @@ export const WordAdd = () => {
   useEffect(() => {
     if (selectedSublevel) {
       loadWords();
+      setSearchQuery(''); // Reset search when changing sublevel
     }
   }, [selectedSublevel]);
 
@@ -172,7 +174,7 @@ export const WordAdd = () => {
         try {
           // Get voice settings - use language-specific if available, otherwise use defaults from config
           let voiceId = selectedLanguageData.voice_id;
-          let voiceSettings = selectedLanguageData.voice_settings || undefined;
+          let voiceSettings = selectedLanguageData.voice_settings;
 
           // If language doesn't have specific voice settings, try to get from global config
           if (!voiceSettings) {
@@ -190,13 +192,16 @@ export const WordAdd = () => {
             }
           }
 
+          // Normalize settings to ensure compatibility with OpenAI TTS
+          const normalizedSettings = normalizeVoiceSettings(voiceSettings);
+
           console.log('🎙️ Generating audio with Voice ID:', voiceId);
-          console.log('🎙️ Voice settings:', voiceSettings);
+          console.log('🎙️ Voice settings:', normalizedSettings);
 
           const audioBlob = await generateSpeech(
             wordText,
             voiceId,
-            voiceSettings
+            normalizedSettings
           );
           const fileName = `${selectedSublevel}/${wordText.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.mp3`;
 
@@ -285,6 +290,11 @@ export const WordAdd = () => {
       toast.error('Failed to delete word');
     }
   };
+
+  // Filter words based on search query
+  const filteredWords = words.filter(word =>
+    word.word.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="space-y-6">
@@ -440,40 +450,80 @@ export const WordAdd = () => {
                 No words yet. Add your first word above!
               </div>
             ) : (
-              <div className="space-y-2 max-h-96 overflow-y-auto">
-                {words.map((word) => (
-                  <div
-                    key={word.id}
-                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
-                  >
-                    <div className="flex-1">
-                      <div className="font-medium">{word.word}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {word.audio_url ? (
-                          <span className="text-green-600">✓ Has audio</span>
-                        ) : (
-                          <span className="text-orange-600">⚠ No audio</span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      {word.audio_url && (
-                        <audio controls className="h-8">
-                          <source src={word.audio_url} type="audio/mpeg" />
-                        </audio>
-                      )}
-
+              <div className="space-y-4">
+                {/* Search Field */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Search words..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                  {searchQuery && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDeleteWord(word.id, word.word)}
+                        onClick={() => setSearchQuery('')}
+                        className="h-6 px-2 text-xs"
                       >
-                        <Trash2 className="h-4 w-4 text-red-500" />
+                        Clear
                       </Button>
                     </div>
+                  )}
+                </div>
+
+                {/* Words List */}
+                {filteredWords.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No words found matching "{searchQuery}"
                   </div>
-                ))}
+                ) : (
+                  <>
+                    {filteredWords.length < words.length && (
+                      <div className="text-sm text-muted-foreground">
+                        Showing {filteredWords.length} of {words.length} words
+                      </div>
+                    )}
+                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                      {filteredWords.map((word) => (
+                        <div
+                          key={word.id}
+                          className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
+                        >
+                          <div className="flex-1">
+                            <div className="font-medium">{word.word}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {word.audio_url ? (
+                                <span className="text-green-600">✓ Has audio</span>
+                              ) : (
+                                <span className="text-orange-600">⚠ No audio</span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            {word.audio_url && (
+                              <audio controls className="h-8">
+                                <source src={word.audio_url} type="audio/mpeg" />
+                              </audio>
+                            )}
+
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteWord(word.id, word.word)}
+                            >
+                              <Trash2 className="h-4 w-4 text-red-500" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </CardContent>

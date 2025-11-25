@@ -17,14 +17,10 @@ export interface Language {
   native_name: string;
   flag_emoji: string;
   is_active: boolean;
+  tts_provider: 'openai' | 'elevenlabs' | null; // TTS provider type
   voice_id: string | null;
   voice_name: string | null;
-  voice_settings: {
-    stability: number;
-    similarity_boost: number;
-    style: number;
-    use_speaker_boost: boolean;
-  } | null;
+  voice_settings: Record<string, any> | null; // Flexible settings for any provider
   created_at: string;
   updated_at: string;
 }

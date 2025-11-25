@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { supabase, Level, Sublevel, Language } from '@/shared/api/supabase';
-import { generateSpeech } from '@/shared/api/elevenlabs';
+import { generateSpeech, normalizeVoiceSettings } from '@/shared/api/openai-tts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -168,7 +168,7 @@ export const WordsImport = () => {
         if (supportsAutoAudio && selectedLanguageData.voice_id) {
           try {
             // Get voice settings
-            let voiceSettings = selectedLanguageData.voice_settings || undefined;
+            let voiceSettings = selectedLanguageData.voice_settings;
 
             // If language doesn't have specific voice settings, try to get from global config
             if (!voiceSettings) {
@@ -186,12 +186,15 @@ export const WordsImport = () => {
               }
             }
 
+            // Normalize settings to ensure compatibility with OpenAI TTS
+            const normalizedSettings = normalizeVoiceSettings(voiceSettings);
+
             console.log(`🎙️ Generating audio for new word: "${word}"`);
 
             const audioBlob = await generateSpeech(
               word,
               selectedLanguageData.voice_id,
-              voiceSettings
+              normalizedSettings
             );
 
             const fileName = `${selectedSublevel}/${word.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.mp3`;

@@ -1,13 +1,11 @@
 import { Button } from "@/shared/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Rocket, Zap, Trophy, Star, Moon, Sun } from "lucide-react";
+import { Rocket, Zap, Trophy, Star } from "lucide-react";
 import { ROUTES } from "@/shared/config/routes";
 import { InstallButton } from "@/components/InstallButton";
-import { useTheme } from "@/shared/lib/theme";
 
 export const HomePage = () => {
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
 
   return (
     <div className="min-h-screen md:h-screen gradient-grid-animated overflow-x-hidden overflow-y-auto flex flex-col">
@@ -24,21 +22,6 @@ export const HomePage = () => {
               <p className="text-[10px] md:text-xs text-muted-foreground hidden sm:block">Spelling Learning Platform</p>
             </div>
           </div>
-
-          {/* Theme Toggle Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={toggleTheme}
-            className="rounded-full glass-card border-primary/30 hover:border-primary"
-            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          >
-            {theme === 'dark' ? (
-              <Sun className="h-4 w-4 md:h-5 md:w-5" />
-            ) : (
-              <Moon className="h-4 w-4 md:h-5 md:w-5" />
-            )}
-          </Button>
         </div>
       </header>
 
@@ -77,7 +60,7 @@ export const HomePage = () => {
               size="lg"
               variant="outline"
               className="rounded-full text-sm md:text-base lg:text-lg px-6 md:px-8 lg:px-10 py-5 md:py-6 lg:py-7 group"
-              onClick={() => navigate(`${ROUTES.PRACTICE}?mode=olympic`)}
+              onClick={() => navigate(`${ROUTES.TRAINING}?mode=olympic`)}
             >
               <Trophy className="mr-2 h-5 w-5 md:h-6 md:w-6" />
               Olympic Mode

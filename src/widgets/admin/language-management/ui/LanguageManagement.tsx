@@ -131,13 +131,19 @@ export const LanguageManagement = () => {
     }
   };
 
-  const handleSaveVoiceSettings = async (voiceId: string, voiceName: string, settings: any) => {
+  const handleSaveVoiceSettings = async (
+    provider: 'openai' | 'elevenlabs',
+    voiceId: string,
+    voiceName: string,
+    settings: any
+  ) => {
     if (!selectedLanguage) return;
 
     try {
       const { error } = await supabase
         .from('languages')
         .update({
+          tts_provider: provider,
           voice_id: voiceId,
           voice_name: voiceName,
           voice_settings: settings,

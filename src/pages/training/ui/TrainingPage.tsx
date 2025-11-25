@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { Star, Sparkles, ChevronRight, ArrowLeft, Rocket, Target, Zap, Shield, Trophy, Loader2, Flame, Globe } from "lucide-react";
@@ -12,6 +12,8 @@ import { toast } from "sonner";
 
 export const TrainingPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const mode = searchParams.get('mode') || 'practice'; // Default to practice mode
   const [coins] = useState(1250);
   const [streak] = useState(5);
   const [xp] = useState(65);
@@ -127,7 +129,7 @@ export const TrainingPage = () => {
   const handleStartPractice = (sublevelId: string) => {
     // Store selected sublevel in localStorage for practice page
     localStorage.setItem('selected_sublevel_id', sublevelId);
-    navigate(`${ROUTES.PRACTICE}?mode=practice`);
+    navigate(`${ROUTES.PRACTICE}?mode=${mode}`);
   };
 
   if (!selectedLanguage) {
@@ -154,14 +156,21 @@ export const TrainingPage = () => {
         <main className="flex-1 relative container mx-auto px-3 md:px-4 py-3 md:py-6 overflow-y-auto">
           <div className="text-center mb-4 md:mb-6 animate-slide-down">
             <div className="hidden md:block mb-4">
-              <Character state="idle" message="🌍 Choose your language!" />
+              <Character
+                state="idle"
+                message={mode === 'olympic' ? "🏆 Olympic Mode - Choose your language!" : "🌍 Choose your language!"}
+              />
             </div>
             <div className="md:hidden mb-3">
               <div className="inline-block glass-card rounded-xl px-3 py-2 border border-primary/20">
-                <p className="text-xs text-foreground font-medium">🌍 Choose your language!</p>
+                <p className="text-xs text-foreground font-medium">
+                  {mode === 'olympic' ? "🏆 Olympic Mode - Choose your language!" : "🌍 Choose your language!"}
+                </p>
               </div>
             </div>
-            <p className="text-xs md:text-sm text-muted-foreground mb-3 md:mb-4">Select a language to begin</p>
+            <p className="text-xs md:text-sm text-muted-foreground mb-3 md:mb-4">
+              {mode === 'olympic' ? 'Select language for Olympic challenge' : 'Select a language to begin'}
+            </p>
 
             <div className="max-w-md mx-auto glass-card rounded-xl md:rounded-2xl p-2 md:p-3">
               <div className="flex items-center justify-between mb-1.5 md:mb-2">
@@ -250,6 +259,8 @@ export const TrainingPage = () => {
               state="idle"
               message={selectedLevel
                 ? `🎯 Excellent! Choose a level from ${selectedLevel.display_name}`
+                : mode === 'olympic'
+                ? "🏆 Olympic Mode - Ready for the challenge?"
                 : "🚀 Ready to practice?"
               }
             />
@@ -257,12 +268,20 @@ export const TrainingPage = () => {
           <div className="md:hidden mb-3">
             <div className="inline-block glass-card rounded-xl px-3 py-2 border border-primary/20">
               <p className="text-xs text-foreground font-medium">
-                {selectedLevel ? `🎯 ${selectedLevel.display_name}` : "🚀 Ready to practice?"}
+                {selectedLevel
+                  ? `🎯 ${selectedLevel.display_name}`
+                  : mode === 'olympic'
+                  ? "🏆 Olympic Mode"
+                  : "🚀 Ready to practice?"}
               </p>
             </div>
           </div>
           <p className="text-xs md:text-sm text-muted-foreground mb-3 md:mb-4">
-            {selectedLevel ? 'Select a level to start' : 'Choose your difficulty level'}
+            {selectedLevel
+              ? 'Select a level to start'
+              : mode === 'olympic'
+              ? 'Choose your Olympic difficulty level'
+              : 'Choose your difficulty level'}
           </p>
 
           {/* XP Progress */}
@@ -314,10 +333,21 @@ export const TrainingPage = () => {
             // Level Selection
             <>
               <h3 className="text-base md:text-xl lg:text-2xl font-bold mb-4 md:mb-6 flex items-center gap-2 md:gap-3 justify-center font-display text-glow-purple">
-                <Flame className="h-4 w-4 md:h-6 md:w-6 text-secondary animate-pulse" />
-                <span className="hidden sm:inline">Choose Your Difficulty Level</span>
-                <span className="sm:hidden">Difficulty Level</span>
-                <Flame className="h-4 w-4 md:h-6 md:w-6 text-secondary animate-pulse" />
+                {mode === 'olympic' ? (
+                  <>
+                    <Trophy className="h-4 w-4 md:h-6 md:w-6 text-accent animate-pulse" />
+                    <span className="hidden sm:inline">Olympic Mode - Choose Difficulty</span>
+                    <span className="sm:hidden">Olympic Difficulty</span>
+                    <Trophy className="h-4 w-4 md:h-6 md:w-6 text-accent animate-pulse" />
+                  </>
+                ) : (
+                  <>
+                    <Flame className="h-4 w-4 md:h-6 md:w-6 text-secondary animate-pulse" />
+                    <span className="hidden sm:inline">Choose Your Difficulty Level</span>
+                    <span className="sm:hidden">Difficulty Level</span>
+                    <Flame className="h-4 w-4 md:h-6 md:w-6 text-secondary animate-pulse" />
+                  </>
+                )}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
@@ -366,9 +396,19 @@ export const TrainingPage = () => {
                           className="w-full rounded-full bg-gradient-primary group text-xs md:text-sm lg:text-base"
                           size="lg"
                         >
-                          <Target className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-                          Select Level
-                          <ChevronRight className="ml-2 h-3 w-3 md:h-4 md:w-4" />
+                          {mode === 'olympic' ? (
+                            <>
+                              <Trophy className="mr-2 h-4 w-4 md:h-5 md:w-5" />
+                              Enter Olympic
+                              <ChevronRight className="ml-2 h-3 w-3 md:h-4 md:w-4" />
+                            </>
+                          ) : (
+                            <>
+                              <Target className="mr-2 h-4 w-4 md:h-5 md:w-5" />
+                              Select Level
+                              <ChevronRight className="ml-2 h-3 w-3 md:h-4 md:w-4" />
+                            </>
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -413,8 +453,17 @@ export const TrainingPage = () => {
                         className="w-full rounded-full bg-gradient-secondary group text-xs md:text-sm"
                         size="sm"
                       >
-                        <Rocket className="mr-2 h-3 w-3 md:h-4 md:w-4" />
-                        Start Practice
+                        {mode === 'olympic' ? (
+                          <>
+                            <Trophy className="mr-2 h-3 w-3 md:h-4 md:w-4" />
+                            Start Olympic
+                          </>
+                        ) : (
+                          <>
+                            <Rocket className="mr-2 h-3 w-3 md:h-4 md:w-4" />
+                            Start Practice
+                          </>
+                        )}
                       </Button>
                     </div>
                   ))}
