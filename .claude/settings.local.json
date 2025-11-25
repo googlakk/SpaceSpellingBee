@@ -13,7 +13,9 @@
       "Bash(mkdir:*)",
       "WebFetch(domain:platform.openai.com)",
       "Bash(node check-files.js:*)",
-      "Bash(node check-files.cjs:*)"
+      "Bash(node check-files.cjs:*)",
+      "Bash(git push:*)",
+      "Bash(git add:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
