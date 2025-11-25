@@ -1,0 +1,20 @@
+# humanstxt.org
+
+/* TEAM */
+    Developer: Intellect Pro School Team
+    Site: https://intellectproschool.com
+    Location: Your Location
+
+/* THANKS */
+    React Team
+    Vite Team
+    Shadcn UI
+    Supabase Team
+
+/* SITE */
+    Last update: 2025-11-25
+    Language: Russian / English
+    Doctype: HTML5
+    IDE: Visual Studio Code
+    Components: React, TypeScript, Tailwind CSS
+    Framework: Vite

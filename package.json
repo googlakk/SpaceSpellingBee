@@ -1,14 +1,28 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "intellect-pro-spelling-bee",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Interactive Spelling Bee application with AI voice recognition for Intellect Pro School",
+  "author": "Intellect Pro School",
+  "license": "MIT",
   "type": "module",
+  "homepage": "https://intellectproschool.com",
+  "keywords": [
+    "spelling-bee",
+    "education",
+    "english-learning",
+    "pwa",
+    "react",
+    "typescript",
+    "ai-voice"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check": "node check-files.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

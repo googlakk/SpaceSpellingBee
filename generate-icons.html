@@ -98,7 +98,7 @@
     </div>
 
     <script>
-        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        const sizes = [16, 32, 72, 96, 128, 144, 152, 192, 384, 512];
 
         function generateIcon(size) {
             const canvas = document.createElement('canvas');
@@ -106,47 +106,67 @@
             canvas.height = size;
             const ctx = canvas.getContext('2d');
 
-            // Background gradient
-            const gradient = ctx.createLinearGradient(0, 0, size, size);
-            gradient.addColorStop(0, '#0a0118');
-            gradient.addColorStop(0.5, '#1a0f2e');
-            gradient.addColorStop(1, '#0a0118');
+            // Background gradient - cosmic theme
+            const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+            gradient.addColorStop(0, '#1a0f2e');
+            gradient.addColorStop(0.5, '#0a0118');
+            gradient.addColorStop(1, '#000000');
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, size, size);
 
             // Draw stars
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-            for (let i = 0; i < 20; i++) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            for (let i = 0; i < 30; i++) {
                 const x = Math.random() * size;
                 const y = Math.random() * size;
-                const radius = Math.random() * 2;
+                const radius = Math.random() * (size * 0.008);
                 ctx.beginPath();
                 ctx.arc(x, y, radius, 0, Math.PI * 2);
                 ctx.fill();
             }
 
-            // Draw rocket emoji or icon
-            ctx.font = `${size * 0.5}px Arial`;
+            // Draw larger stars with twinkle
+            ctx.fillStyle = 'rgba(0, 255, 255, 0.6)';
+            for (let i = 0; i < 5; i++) {
+                const x = Math.random() * size;
+                const y = Math.random() * size;
+                const radius = Math.random() * (size * 0.012) + (size * 0.008);
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Draw main bee icon
+            ctx.font = `${size * 0.55}px Arial`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
-            // Add glow effect
-            ctx.shadowColor = '#00ffff';
-            ctx.shadowBlur = size * 0.1;
-            ctx.fillStyle = '#00ffff';
-            ctx.fillText('🚀', size / 2, size / 2);
+            // Add glow effect for bee
+            ctx.shadowColor = '#FFD700';
+            ctx.shadowBlur = size * 0.15;
+            ctx.fillStyle = '#FFD700';
+            ctx.fillText('🐝', size / 2, size * 0.48);
 
-            // Add sparkle
-            ctx.font = `${size * 0.2}px Arial`;
+            // Add sparkles around
+            ctx.font = `${size * 0.18}px Arial`;
+            ctx.fillStyle = '#00ffff';
+            ctx.shadowColor = '#00ffff';
+            ctx.shadowBlur = size * 0.08;
+            ctx.fillText('✨', size * 0.2, size * 0.25);
+            ctx.fillText('✨', size * 0.8, size * 0.75);
+
+            // Add letter 'A' with glow
+            ctx.font = `bold ${size * 0.25}px Arial`;
             ctx.fillStyle = '#ff00ff';
             ctx.shadowColor = '#ff00ff';
-            ctx.shadowBlur = size * 0.05;
-            ctx.fillText('✨', size * 0.75, size * 0.25);
+            ctx.shadowBlur = size * 0.06;
+            ctx.fillText('A', size * 0.78, size * 0.3);
 
-            // Add border
-            ctx.strokeStyle = '#00ffff';
-            ctx.lineWidth = size * 0.02;
-            ctx.strokeRect(0, 0, size, size);
+            // Add subtle border
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = 'rgba(0, 255, 255, 0.3)';
+            ctx.lineWidth = size * 0.015;
+            ctx.strokeRect(size * 0.02, size * 0.02, size * 0.96, size * 0.96);
 
             return canvas;
         }

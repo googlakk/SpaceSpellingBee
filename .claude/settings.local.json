@@ -11,7 +11,9 @@
       "mcp__ide__getDiagnostics",
       "WebSearch",
       "Bash(mkdir:*)",
-      "WebFetch(domain:platform.openai.com)"
+      "WebFetch(domain:platform.openai.com)",
+      "Bash(node check-files.js:*)",
+      "Bash(node check-files.cjs:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

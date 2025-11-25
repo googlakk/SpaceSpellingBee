@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проверка готовности к публикации - Spelling Bee</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist-item {
+            background: #f8f9fa;
+            margin: 10px 0;
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            border-left: 4px solid #ddd;
+        }
+
+        .checklist-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .checklist-item.completed {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+
+        .checklist-item.warning {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+
+        .checklist-item.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            cursor: pointer;
+            accent-color: #28a745;
+        }
+
+        .item-text {
+            flex: 1;
+            color: #333;
+        }
+
+        .item-status {
+            font-size: 20px;
+            margin-left: 10px;
+        }
+
+        .section-title {
+            color: #444;
+            margin: 30px 0 15px 0;
+            font-size: 18px;
+            font-weight: 600;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+
+        .progress-container {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 30px;
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #28a745, #20c997);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-check:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #5a6268;
+        }
+
+        .status-message {
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .status-message.show {
+            display: block;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-message.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .instructions {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .instructions h3 {
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            color: #333;
+        }
+
+        .instructions li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Проверка готовности к публикации</h1>
+        <p class="subtitle">Intellect Pro School - Spelling Bee Application</p>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar">0%</div>
+        </div>
+
+        <h2 class="section-title">📱 Иконки и изображения</h2>
+        <ul class="checklist">
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="icons">
+                <span class="item-text">Сгенерированы все иконки (16x16, 32x32, 72x72, 96x96, 128x128, 144x144, 152x152, 192x192, 384x384, 512x512)</span>
+                <span class="item-status"></span>
+            </li>
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="icons">
+                <span class="item-text">Создан favicon.ico</span>
+                <span class="item-status"></span>
+            </li>
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="icons">
+                <span class="item-text">Создано Open Graph изображение (og-image.png, 1200x630)</span>
+                <span class="item-status"></span>
+            </li>
+        </ul>
+
+        <h2 class="section-title">🌐 SEO и метатеги</h2>
+        <ul class="checklist">
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="seo">
+                <span class="item-text">Обновлены метатеги в index.html</span>
+                <span class="item-status"></span>
+            </li>
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="seo">
+                <span class="item-text">Настроен robots.txt</span>
+                <span class="item-status"></span>
+            </li>
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="seo">
+                <span class="item-text">Создан sitemap.xml</span>
+                <span class="item-status"></span>
+            </li>
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="seo">
+                <span class="item-text">URL-адреса заменены на реальный домен</span>
+                <span class="item-status"></span>
+            </li>
+        </ul>
+
+        <h2 class="section-title">⚙️ Конфигурация</h2>
+        <ul class="checklist">
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="config">
+                <span class="item-text">Обновлен package.json (имя, версия, описание)</span>
+                <span class="item-status"></span>
+            </li>
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="config">
+                <span class="item-text">Настроены переменные окружения (.env)</span>
+                <span class="item-status"></span>
+            </li>
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="config">
+                <span class="item-text">Обновлен manifest.json</span>
+                <span class="item-status"></span>
+            </li>
+        </ul>
+
+        <h2 class="section-title">🔒 Безопасность</h2>
+        <ul class="checklist">
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="security">
+                <span class="item-text">API ключи скрыты в переменных окружения</span>
+                <span class="item-status"></span>
+            </li>
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="security">
+                <span class="item-text">.env добавлен в .gitignore</span>
+                <span class="item-status"></span>
+            </li>
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="security">
+                <span class="item-text">HTTPS будет включен на продакшене</span>
+                <span class="item-status"></span>
+            </li>
+        </ul>
+
+        <h2 class="section-title">🚀 Сборка и тестирование</h2>
+        <ul class="checklist">
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="build">
+                <span class="item-text">Выполнена сборка (npm run build)</span>
+                <span class="item-status"></span>
+            </li>
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="build">
+                <span class="item-text">Проверена работа в продакшен режиме (npm run preview)</span>
+                <span class="item-status"></span>
+            </li>
+            <li class="checklist-item">
+                <input type="checkbox" class="checkbox" data-category="build">
+                <span class="item-text">Протестирована на мобильных устройствах</span>
+                <span class="item-status"></span>
+            </li>
+        </ul>
+
+        <div class="button-container">
+            <button class="btn-check" onclick="checkCompletion()">🔍 Проверить готовность</button>
+            <button class="btn-reset" onclick="resetChecklist()">🔄 Сбросить</button>
+        </div>
+
+        <div class="status-message" id="statusMessage"></div>
+
+        <div class="instructions">
+            <h3>📚 Следующие шаги:</h3>
+            <ul>
+                <li>Откройте <code>generate-icons.html</code> для создания иконок</li>
+                <li>Откройте <code>generate-og-image.html</code> для создания Open Graph изображения</li>
+                <li>Прочитайте <code>DEPLOYMENT.md</code> для полной инструкции по развертыванию</li>
+                <li>Выполните <code>npm run build</code> перед публикацией</li>
+                <li>Используйте <code>.env.example</code> как шаблон для создания <code>.env</code></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Load saved state
+        window.addEventListener('load', () => {
+            const checkboxes = document.querySelectorAll('.checkbox');
+            checkboxes.forEach((checkbox, index) => {
+                const saved = localStorage.getItem(`checkbox-${index}`);
+                if (saved === 'true') {
+                    checkbox.checked = true;
+                    updateItemStyle(checkbox.parentElement);
+                }
+            });
+            updateProgress();
+        });
+
+        // Save state on change
+        document.querySelectorAll('.checkbox').forEach((checkbox, index) => {
+            checkbox.addEventListener('change', (e) => {
+                localStorage.setItem(`checkbox-${index}`, e.target.checked);
+                updateItemStyle(e.target.parentElement);
+                updateProgress();
+            });
+        });
+
+        function updateItemStyle(item) {
+            const checkbox = item.querySelector('.checkbox');
+            const statusSpan = item.querySelector('.item-status');
+
+            if (checkbox.checked) {
+                item.classList.add('completed');
+                statusSpan.textContent = '✅';
+            } else {
+                item.classList.remove('completed');
+                statusSpan.textContent = '';
+            }
+        }
+
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.checkbox');
+            const checked = document.querySelectorAll('.checkbox:checked').length;
+            const total = checkboxes.length;
+            const percentage = Math.round((checked / total) * 100);
+
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+        }
+
+        function checkCompletion() {
+            const checkboxes = document.querySelectorAll('.checkbox');
+            const checked = document.querySelectorAll('.checkbox:checked').length;
+            const total = checkboxes.length;
+            const statusMessage = document.getElementById('statusMessage');
+
+            statusMessage.classList.add('show');
+
+            if (checked === total) {
+                statusMessage.className = 'status-message show success';
+                statusMessage.textContent = '🎉 Отлично! Приложение готово к публикации!';
+            } else {
+                statusMessage.className = 'status-message show warning';
+                statusMessage.textContent = `⚠️ Завершено ${checked} из ${total} пунктов. Проверьте оставшиеся задачи.`;
+            }
+        }
+
+        function resetChecklist() {
+            if (confirm('Вы уверены, что хотите сбросить весь чеклист?')) {
+                document.querySelectorAll('.checkbox').forEach((checkbox, index) => {
+                    checkbox.checked = false;
+                    localStorage.removeItem(`checkbox-${index}`);
+                    updateItemStyle(checkbox.parentElement);
+                });
+                updateProgress();
+
+                const statusMessage = document.getElementById('statusMessage');
+                statusMessage.classList.remove('show');
+            }
+        }
+    </script>
+</body>
+</html>
