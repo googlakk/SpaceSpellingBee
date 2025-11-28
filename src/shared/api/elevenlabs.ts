@@ -9,16 +9,12 @@ export interface ElevenLabsVoice {
 export interface VoiceSettings {
   stability: number;
   similarity_boost: number;
-  style: number;
-  use_speaker_boost: boolean;
 }
 
-// Default voice settings
+// Default voice settings для Eleven v3 (alpha)
 const DEFAULT_VOICE_SETTINGS: VoiceSettings = {
-  stability: 0.54,
-  similarity_boost: 0.47,
-  style: 0.47,
-  use_speaker_boost: true,
+  stability: 0.5, // Natural режим
+  similarity_boost: 0.75,
 };
 
 // Default voice ID - used as fallback
@@ -47,11 +43,8 @@ export async function generateSpeech(
       },
       body: JSON.stringify({
         text,
-        model_id: 'eleven_multilingual_v2',
+        model_id: 'eleven_v3',
         voice_settings: finalSettings,
-        apply_text_normalization: 'off',
-        previous_text: '',
-        next_text: '',
       }),
     }
   );

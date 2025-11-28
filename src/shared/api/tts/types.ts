@@ -22,12 +22,23 @@ export interface OpenAITTSSettings {
   speed: number; // 0.25 to 4.0
 }
 
-export interface ElevenLabsTTSSettings {
+// Настройки для Eleven Multilingual v2
+export interface ElevenLabsV2TTSSettings {
   stability: number;
   similarity_boost: number;
   style: number;
   use_speaker_boost: boolean;
 }
+
+// Настройки для Eleven v3 (alpha) - более простая структура
+export interface ElevenLabsV3TTSSettings {
+  stability: number; // Creative/Natural/Robust режим
+  similarity_boost: number; // Clarity + Similarity Enhancement
+  // Примечание: v3 НЕ поддерживает use_speaker_boost и style
+}
+
+// Union type для всех версий ElevenLabs
+export type ElevenLabsTTSSettings = ElevenLabsV2TTSSettings | ElevenLabsV3TTSSettings;
 
 // Union type for all provider settings
 export type TTSSettings = OpenAITTSSettings | ElevenLabsTTSSettings;

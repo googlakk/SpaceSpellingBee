@@ -18,12 +18,10 @@ import {
 const ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY;
 const ELEVENLABS_API_URL = 'https://api.elevenlabs.io/v1';
 
-// Default settings
+// Default settings для Eleven v3 (alpha)
 const DEFAULT_SETTINGS: ElevenLabsTTSSettings = {
-  stability: 0.54,
-  similarity_boost: 0.47,
-  style: 0.47,
-  use_speaker_boost: true,
+  stability: 0.5, // Natural режим (сбалансированный)
+  similarity_boost: 0.75, // Высокая четкость для образовательного контента
 };
 
 // Default voice ID
@@ -67,11 +65,14 @@ export class ElevenLabsTTSProvider implements ITTSProvider {
     try {
       const requestBody = {
         text,
-        model_id: 'eleven_multilingual_v2',
-        voice_settings: elevenLabsSettings,
-        apply_text_normalization: 'off',
-        previous_text: '',
-        next_text: '',
+        model_id: 'eleven_v3', // Используем Eleven v3 (alpha)
+        voice_settings: {
+          stability: elevenLabsSettings.stability,
+          similarity_boost: elevenLabsSettings.similarity_boost,
+          // v3 НЕ поддерживает style и use_speaker_boost
+        },
+        language_code: 'en', // Английский язык (ISO 639-1)
+        // НЕ используем apply_text_normalization для v3
       };
 
       console.log('📤 Request body:', JSON.stringify(requestBody, null, 2));
