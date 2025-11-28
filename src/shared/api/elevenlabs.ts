@@ -15,14 +15,14 @@ export interface VoiceSettings {
 
 // Default voice settings
 const DEFAULT_VOICE_SETTINGS: VoiceSettings = {
-  stability: 0.5,
-  similarity_boost: 0.75,
-  style: 0.0,
+  stability: 0.54,
+  similarity_boost: 0.47,
+  style: 0.47,
   use_speaker_boost: true,
 };
 
-// Default voice ID (Sarah) - used as fallback
-const DEFAULT_VOICE_ID = 'n1PvBOwxb8X6m7tahp2h';
+// Default voice ID - used as fallback
+const DEFAULT_VOICE_ID = 'nPczCjzI2devNBz1zQrb';
 
 export async function generateSpeech(
   text: string,
@@ -49,6 +49,9 @@ export async function generateSpeech(
         text,
         model_id: 'eleven_multilingual_v2',
         voice_settings: finalSettings,
+        apply_text_normalization: 'off',
+        previous_text: '',
+        next_text: '',
       }),
     }
   );

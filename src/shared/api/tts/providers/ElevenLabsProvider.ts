@@ -20,20 +20,23 @@ const ELEVENLABS_API_URL = 'https://api.elevenlabs.io/v1';
 
 // Default settings
 const DEFAULT_SETTINGS: ElevenLabsTTSSettings = {
-  stability: 0.5,
-  similarity_boost: 0.75,
-  style: 0.0,
+  stability: 0.54,
+  similarity_boost: 0.47,
+  style: 0.47,
   use_speaker_boost: true,
 };
 
-// Default voice ID (Sarah)
-const DEFAULT_VOICE_ID = 'n1PvBOwxb8X6m7tahp2h';
+// Default voice ID
+const DEFAULT_VOICE_ID = 'nPczCjzI2devNBz1zQrb';
 
 export class ElevenLabsTTSProvider implements ITTSProvider {
   readonly type: TTSProviderType = 'elevenlabs';
 
   isConfigured(): boolean {
-    return !!ELEVENLABS_API_KEY;
+    const isConfigured = !!ELEVENLABS_API_KEY;
+    console.log('🔧 ElevenLabs isConfigured:', isConfigured);
+    console.log('🔑 API Key present:', ELEVENLABS_API_KEY ? `Yes (${ELEVENLABS_API_KEY.substring(0, 10)}...)` : 'No');
+    return isConfigured;
   }
 
   getDefaultSettings(): ElevenLabsTTSSettings {
@@ -49,13 +52,30 @@ export class ElevenLabsTTSProvider implements ITTSProvider {
     voiceId: string,
     settings: TTSSettings
   ): Promise<Blob> {
+    console.log('🎬 ElevenLabs generateSpeech called');
+    console.log('📝 Text:', text);
+    console.log('🎙️ Voice ID:', voiceId);
+    console.log('⚙️ Settings:', settings);
+
     if (!this.isConfigured()) {
+      console.error('❌ ElevenLabs not configured!');
       throw new TTSProviderNotConfiguredError('elevenlabs');
     }
 
     const elevenLabsSettings = settings as ElevenLabsTTSSettings;
 
     try {
+      const requestBody = {
+        text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: elevenLabsSettings,
+        apply_text_normalization: 'off',
+        previous_text: '',
+        next_text: '',
+      };
+
+      console.log('📤 Request body:', JSON.stringify(requestBody, null, 2));
+
       const response = await fetch(
         `${ELEVENLABS_API_URL}/text-to-speech/${voiceId}`,
         {
@@ -65,20 +85,21 @@ export class ElevenLabsTTSProvider implements ITTSProvider {
             'Content-Type': 'application/json',
             'xi-api-key': ELEVENLABS_API_KEY!,
           },
-          body: JSON.stringify({
-            text,
-            model_id: 'eleven_multilingual_v2',
-            voice_settings: elevenLabsSettings,
-          }),
+          body: JSON.stringify(requestBody),
         }
       );
 
+      console.log('📥 TTS Response status:', response.status, response.statusText);
+
       if (!response.ok) {
         const errorText = await response.text();
+        console.error('❌ TTS API error:', response.status, errorText);
         throw new Error(`ElevenLabs API error: ${response.status} - ${errorText}`);
       }
 
-      return await response.blob();
+      const blob = await response.blob();
+      console.log('✅ Audio generated:', blob.size, 'bytes');
+      return blob;
     } catch (error) {
       throw new TTSProviderError(
         `Failed to generate speech: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -89,29 +110,41 @@ export class ElevenLabsTTSProvider implements ITTSProvider {
   }
 
   async getAvailableVoices(): Promise<TTSVoice[]> {
+    console.log('🎤 ElevenLabs getAvailableVoices called');
+
     if (!this.isConfigured()) {
+      console.error('❌ ElevenLabs not configured!');
       throw new TTSProviderNotConfiguredError('elevenlabs');
     }
 
     try {
+      console.log('📡 Fetching voices from:', `${ELEVENLABS_API_URL}/voices`);
       const response = await fetch(`${ELEVENLABS_API_URL}/voices`, {
         headers: {
           'xi-api-key': ELEVENLABS_API_KEY!,
         },
       });
 
+      console.log('📥 Response status:', response.status, response.statusText);
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Failed to fetch voices:', response.status, errorText);
         throw new Error(`Failed to fetch voices: ${response.status}`);
       }
 
       const data = await response.json();
+      console.log('✅ Voices loaded:', data.voices?.length || 0);
 
       // Transform ElevenLabs voice format to our common format
-      return data.voices.map((voice: any) => ({
+      const voices = data.voices.map((voice: any) => ({
         voice_id: voice.voice_id,
         name: voice.name,
         description: voice.description || voice.labels?.description || '',
       }));
+
+      console.log('🎙️ Transformed voices:', voices.map((v: any) => v.name).join(', '));
+      return voices;
     } catch (error) {
       throw new TTSProviderError(
         `Failed to get available voices: ${error instanceof Error ? error.message : 'Unknown error'}`,

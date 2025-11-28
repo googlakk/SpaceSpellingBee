@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase, Level, Sublevel, Language } from '@/shared/api/supabase';
-import { generateSpeech, normalizeVoiceSettings } from '@/shared/api/openai-tts';
+import { ttsManager } from '@/shared/api/tts';
+import { TTSProviderType, TTSProviderConfig } from '@/shared/api/tts/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -172,7 +173,8 @@ export const WordAdd = () => {
 
       if (supportsAutoAudio && selectedLanguageData?.voice_id) {
         try {
-          // Get voice settings - use language-specific if available, otherwise use defaults from config
+          // Get TTS provider and voice settings
+          const provider: TTSProviderType = (selectedLanguageData.tts_provider as TTSProviderType) || 'elevenlabs';
           let voiceId = selectedLanguageData.voice_id;
           let voiceSettings = selectedLanguageData.voice_settings;
 
@@ -192,17 +194,22 @@ export const WordAdd = () => {
             }
           }
 
-          // Normalize settings to ensure compatibility with OpenAI TTS
-          const normalizedSettings = normalizeVoiceSettings(voiceSettings);
+          // Use default settings if none available
+          if (!voiceSettings) {
+            voiceSettings = ttsManager.getDefaultSettings(provider);
+          }
 
-          console.log('🎙️ Generating audio with Voice ID:', voiceId);
-          console.log('🎙️ Voice settings:', normalizedSettings);
+          console.log('🎙️ Generating audio with Provider:', provider);
+          console.log('🎙️ Voice ID:', voiceId);
+          console.log('🎙️ Voice settings:', voiceSettings);
 
-          const audioBlob = await generateSpeech(
-            wordText,
+          const ttsConfig: TTSProviderConfig = {
+            provider,
             voiceId,
-            normalizedSettings
-          );
+            settings: voiceSettings,
+          };
+
+          const audioBlob = await ttsManager.generateSpeech(wordText, ttsConfig);
           const fileName = `${selectedSublevel}/${wordText.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.mp3`;
 
           const { error: uploadError } = await supabase.storage

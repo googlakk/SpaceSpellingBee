@@ -123,16 +123,52 @@ export const LevelsManagement = () => {
   };
 
   const handleDeleteLevel = async (levelId: string, levelName: string) => {
-    if (!confirm(`Delete level "${levelName}"? This will also delete all sublevels and words.`)) {
-      return;
-    }
-
     try {
+      // Get all sublevel IDs for this level
+      const { data: levelSublevels, error: sublevelsError } = await supabase
+        .from('sublevels')
+        .select('id')
+        .eq('level_id', levelId);
+
+      if (sublevelsError) throw sublevelsError;
+
+      const sublevelIds = levelSublevels?.map(s => s.id) || [];
+
+      // Count total words across all sublevels
+      let totalWords = 0;
+      if (sublevelIds.length > 0) {
+        const { count, error: countError } = await supabase
+          .from('words')
+          .select('*', { count: 'exact', head: true })
+          .in('sublevel_id', sublevelIds);
+
+        if (countError) throw countError;
+        totalWords = count || 0;
+      }
+
+      const sublevelCount = sublevelIds.length;
+
+      // Show detailed confirmation
+      const confirmMessage =
+        `⚠️ DELETE LEVEL "${levelName}"?\n\n` +
+        `This will permanently delete:\n` +
+        `• ${sublevelCount} sublevel${sublevelCount === 1 ? '' : 's'}\n` +
+        `• ${totalWords} word${totalWords === 1 ? '' : 's'}\n\n` +
+        `This action CANNOT be undone!\n\n` +
+        `Are you absolutely sure?`;
+
+      if (!confirm(confirmMessage)) {
+        return;
+      }
+
       const { error } = await supabase.from('levels').delete().eq('id', levelId);
 
       if (error) throw error;
 
-      toast.success(`Level "${levelName}" deleted successfully`);
+      toast.success(
+        `Level "${levelName}" deleted successfully ` +
+        `(${sublevelCount} sublevel${sublevelCount === 1 ? '' : 's'}, ${totalWords} word${totalWords === 1 ? '' : 's'})`
+      );
       loadLevels();
     } catch (error) {
       console.error('Error deleting level:', error);
@@ -168,17 +204,32 @@ export const LevelsManagement = () => {
     }
   };
 
-  const handleDeleteSublevel = async (sublevelId: string) => {
-    if (!confirm('Are you sure you want to delete this sublevel? All associated words will be deleted.')) {
-      return;
-    }
-
+  const handleDeleteSublevel = async (sublevelId: string, sublevelName: string) => {
     try {
+      // First, count how many words will be deleted
+      const { count, error: countError } = await supabase
+        .from('words')
+        .select('*', { count: 'exact', head: true })
+        .eq('sublevel_id', sublevelId);
+
+      if (countError) throw countError;
+
+      const wordCount = count || 0;
+
+      // Show confirmation with word count
+      const confirmMessage = wordCount > 0
+        ? `⚠️ Delete sublevel "${sublevelName}"?\n\nThis will permanently delete ${wordCount} word${wordCount === 1 ? '' : 's'}.\n\nThis action cannot be undone.`
+        : `Delete sublevel "${sublevelName}"?\n\nThere are no words in this sublevel.`;
+
+      if (!confirm(confirmMessage)) {
+        return;
+      }
+
       const { error } = await supabase.from('sublevels').delete().eq('id', sublevelId);
 
       if (error) throw error;
 
-      toast.success('Sublevel deleted successfully');
+      toast.success(`Sublevel deleted successfully${wordCount > 0 ? ` (${wordCount} word${wordCount === 1 ? '' : 's'} removed)` : ''}`);
       loadLevels();
     } catch (error) {
       console.error('Error deleting sublevel:', error);
@@ -329,7 +380,7 @@ export const LevelsManagement = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleDeleteSublevel(sublevel.id)}
+                            onClick={() => handleDeleteSublevel(sublevel.id, sublevel.display_name)}
                           >
                             <Trash2 className="h-4 w-4 text-red-500" />
                           </Button>

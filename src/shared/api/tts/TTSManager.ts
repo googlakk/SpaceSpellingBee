@@ -19,7 +19,7 @@ import { ElevenLabsTTSProvider } from './providers/ElevenLabsProvider';
 export class TTSManager {
   private static instance: TTSManager;
   private providers: Map<TTSProviderType, ITTSProvider>;
-  private defaultProvider: TTSProviderType = 'openai';
+  private defaultProvider: TTSProviderType = 'elevenlabs';
 
   private constructor() {
     this.providers = new Map();

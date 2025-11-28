@@ -15,7 +15,8 @@
       "Bash(node check-files.js:*)",
       "Bash(node check-files.cjs:*)",
       "Bash(git push:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "WebFetch(domain:elevenlabs.io)"
     ]
   },
   "enableAllProjectMcpServers": true,
