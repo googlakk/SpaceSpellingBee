@@ -79,7 +79,7 @@ export const WordAdd = () => {
         .from('levels')
         .select('*, languages(code)')
         .eq('language_id', languageId)
-        .order('name');
+        .order('order_index');
 
       if (error) throw error;
       setLevels(levelsData || []);

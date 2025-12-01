@@ -31,6 +31,7 @@ export interface Level {
   display_name: string;
   description: string | null;
   language_id: string;
+  order_index: number;
   created_at: string;
   updated_at: string;
 }

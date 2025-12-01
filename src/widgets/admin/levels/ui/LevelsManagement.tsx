@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Loader2, ArrowUp, ArrowDown } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Accordion,
@@ -60,7 +60,7 @@ export const LevelsManagement = () => {
       const { data: levelsData, error: levelsError } = await supabase
         .from('levels')
         .select('*, languages(code, name, flag_emoji)')
-        .order('name');
+        .order('order_index');
 
       if (levelsError) throw levelsError;
 
@@ -97,11 +97,22 @@ export const LevelsManagement = () => {
     setIsCreatingLevel(true);
 
     try {
+      // Get max order_index for this language
+      const { data: existingLevels } = await supabase
+        .from('levels')
+        .select('order_index')
+        .eq('language_id', newLevel.languageId)
+        .order('order_index', { ascending: false })
+        .limit(1);
+
+      const maxOrder = existingLevels?.[0]?.order_index ?? 0;
+
       const { error } = await supabase.from('levels').insert({
         name: newLevel.name,
         display_name: newLevel.displayName,
         description: newLevel.description || null,
         language_id: newLevel.languageId,
+        order_index: maxOrder + 1,
       });
 
       if (error) throw error;
@@ -237,6 +248,122 @@ export const LevelsManagement = () => {
     }
   };
 
+  const handleMoveLevelUp = async (levelId: string, currentIndex: number, languageId: string) => {
+    try {
+      // Find the level above this one (same language, lower order_index)
+      const { data: levelAbove } = await supabase
+        .from('levels')
+        .select('id, order_index')
+        .eq('language_id', languageId)
+        .lt('order_index', currentIndex)
+        .order('order_index', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (!levelAbove) {
+        toast.error('Already at the top');
+        return;
+      }
+
+      // Swap order_index values
+      await supabase.from('levels').update({ order_index: levelAbove.order_index }).eq('id', levelId);
+      await supabase.from('levels').update({ order_index: currentIndex }).eq('id', levelAbove.id);
+
+      toast.success('Level moved up');
+      loadLevels();
+    } catch (error) {
+      console.error('Error moving level:', error);
+      toast.error('Failed to move level');
+    }
+  };
+
+  const handleMoveLevelDown = async (levelId: string, currentIndex: number, languageId: string) => {
+    try {
+      // Find the level below this one (same language, higher order_index)
+      const { data: levelBelow } = await supabase
+        .from('levels')
+        .select('id, order_index')
+        .eq('language_id', languageId)
+        .gt('order_index', currentIndex)
+        .order('order_index', { ascending: true })
+        .limit(1)
+        .single();
+
+      if (!levelBelow) {
+        toast.error('Already at the bottom');
+        return;
+      }
+
+      // Swap order_index values
+      await supabase.from('levels').update({ order_index: levelBelow.order_index }).eq('id', levelId);
+      await supabase.from('levels').update({ order_index: currentIndex }).eq('id', levelBelow.id);
+
+      toast.success('Level moved down');
+      loadLevels();
+    } catch (error) {
+      console.error('Error moving level:', error);
+      toast.error('Failed to move level');
+    }
+  };
+
+  const handleMoveSublevelUp = async (sublevelId: string, currentIndex: number, levelId: string) => {
+    try {
+      // Find the sublevel above this one (same level, lower order_index)
+      const { data: sublevelAbove } = await supabase
+        .from('sublevels')
+        .select('id, order_index')
+        .eq('level_id', levelId)
+        .lt('order_index', currentIndex)
+        .order('order_index', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (!sublevelAbove) {
+        toast.error('Already at the top');
+        return;
+      }
+
+      // Swap order_index values
+      await supabase.from('sublevels').update({ order_index: sublevelAbove.order_index }).eq('id', sublevelId);
+      await supabase.from('sublevels').update({ order_index: currentIndex }).eq('id', sublevelAbove.id);
+
+      toast.success('Sublevel moved up');
+      loadLevels();
+    } catch (error) {
+      console.error('Error moving sublevel:', error);
+      toast.error('Failed to move sublevel');
+    }
+  };
+
+  const handleMoveSublevelDown = async (sublevelId: string, currentIndex: number, levelId: string) => {
+    try {
+      // Find the sublevel below this one (same level, higher order_index)
+      const { data: sublevelBelow } = await supabase
+        .from('sublevels')
+        .select('id, order_index')
+        .eq('level_id', levelId)
+        .gt('order_index', currentIndex)
+        .order('order_index', { ascending: true })
+        .limit(1)
+        .single();
+
+      if (!sublevelBelow) {
+        toast.error('Already at the bottom');
+        return;
+      }
+
+      // Swap order_index values
+      await supabase.from('sublevels').update({ order_index: sublevelBelow.order_index }).eq('id', sublevelId);
+      await supabase.from('sublevels').update({ order_index: currentIndex }).eq('id', sublevelBelow.id);
+
+      toast.success('Sublevel moved down');
+      loadLevels();
+    } catch (error) {
+      console.error('Error moving sublevel:', error);
+      toast.error('Failed to move sublevel');
+    }
+  };
+
   if (loading) {
     return (
       <div className="text-center py-8">
@@ -346,17 +473,41 @@ export const LevelsManagement = () => {
                         ({sublevels[level.id]?.length || 0} sublevels)
                       </span>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteLevel(level.id, level.display_name);
-                      }}
-                      className="mr-2"
-                    >
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMoveLevelUp(level.id, level.order_index, level.language_id);
+                        }}
+                        title="Move up"
+                      >
+                        <ArrowUp className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMoveLevelDown(level.id, level.order_index, level.language_id);
+                        }}
+                        title="Move down"
+                      >
+                        <ArrowDown className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteLevel(level.id, level.display_name);
+                        }}
+                        className="mr-2"
+                      >
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
@@ -377,13 +528,31 @@ export const LevelsManagement = () => {
                               </div>
                             )}
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDeleteSublevel(sublevel.id, sublevel.display_name)}
-                          >
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </Button>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleMoveSublevelUp(sublevel.id, sublevel.order_index, level.id)}
+                              title="Move up"
+                            >
+                              <ArrowUp className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleMoveSublevelDown(sublevel.id, sublevel.order_index, level.id)}
+                              title="Move down"
+                            >
+                              <ArrowDown className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteSublevel(sublevel.id, sublevel.display_name)}
+                            >
+                              <Trash2 className="h-4 w-4 text-red-500" />
+                            </Button>
+                          </div>
                         </div>
                       ))}
                     </div>

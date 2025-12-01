@@ -65,7 +65,7 @@ export const TrainingPage = () => {
         .from('levels')
         .select('*')
         .eq('language_id', languageId)
-        .order('name');
+        .order('order_index');
 
       if (levelsError) throw levelsError;
 

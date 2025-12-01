@@ -70,7 +70,7 @@ export const AudioUpload = () => {
         .from('levels')
         .select('*, languages(code, flag_emoji)')
         .eq('language_id', languageId)
-        .order('name');
+        .order('order_index');
 
       if (error) throw error;
       setLevels(data || []);
