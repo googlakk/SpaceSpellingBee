@@ -251,16 +251,10 @@ export const PracticePage = () => {
       // Store original order
       setOriginalWords(data);
 
-      // Shuffle only for Olympic Mode
-      if (isOlympicMode) {
-        const shuffled = shuffleArray(data);
-        setWords(shuffled);
-        toast.success(`Loaded ${data.length} words in random order!`, { icon: '🔀' });
-      } else {
-        // Keep original order for Practice Mode
-        setWords(data);
-        toast.success(`Loaded ${data.length} words!`, { icon: '📚' });
-      }
+      // Shuffle for both modes
+      const shuffled = shuffleArray(data);
+      setWords(shuffled);
+      toast.success(`Loaded ${data.length} words in random order!`, { icon: '🔀' });
     } catch (error) {
       console.error('Error loading words:', error);
       toast.error('Failed to load words');
