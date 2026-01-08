@@ -31,10 +31,7 @@ export class ElevenLabsTTSProvider implements ITTSProvider {
   readonly type: TTSProviderType = 'elevenlabs';
 
   isConfigured(): boolean {
-    const isConfigured = !!ELEVENLABS_API_KEY;
-    console.log('🔧 ElevenLabs isConfigured:', isConfigured);
-    console.log('🔑 API Key present:', ELEVENLABS_API_KEY ? `Yes (${ELEVENLABS_API_KEY.substring(0, 10)}...)` : 'No');
-    return isConfigured;
+    return !!ELEVENLABS_API_KEY;
   }
 
   getDefaultSettings(): ElevenLabsTTSSettings {

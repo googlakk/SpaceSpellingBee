@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { Lock } from 'lucide-react';
 
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
 
@@ -30,31 +30,28 @@ export const AdminLoginPage = () => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-cosmic stars-bg p-3 md:p-4">
-      <Card className="w-full max-w-md glass-card border-primary/20">
-        <CardHeader className="space-y-1 p-4 md:p-6">
-          <CardTitle className="text-xl md:text-2xl font-bold text-center text-glow-cyan font-display">Admin Panel</CardTitle>
-          <CardDescription className="text-center text-xs md:text-sm">
-            Enter password to access admin dashboard
-          </CardDescription>
+    <div className="h-screen flex items-center justify-center gradient-grid-bg p-4">
+      <Card className="w-full max-w-md glass-card border-primary/30">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-display text-glow-cyan">Admin Panel</CardTitle>
+          <CardDescription>Enter password to access admin dashboard</CardDescription>
         </CardHeader>
-        <CardContent className="p-4 md:p-6 pt-0 md:pt-0">
-          <form onSubmit={handleLogin} className="space-y-3 md:space-y-4">
-            <div className="space-y-1.5 md:space-y-2">
-              <Label htmlFor="password" className="text-xs md:text-sm">Password</Label>
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                id="password"
                 type="password"
-                placeholder="Enter admin password"
+                placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-10 md:h-11 text-sm md:text-base"
+                className="pl-10 bg-background/50"
                 required
               />
             </div>
             <Button
               type="submit"
-              className="w-full h-10 md:h-11 text-sm md:text-base rounded-full bg-gradient-primary hover:scale-105 glow-cyan transition-all"
+              className="w-full rounded-full bg-gradient-primary"
               disabled={isLoading}
             >
               {isLoading ? 'Logging in...' : 'Login'}

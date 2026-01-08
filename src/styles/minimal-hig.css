@@ -7,24 +7,38 @@
 /* Apply by default to all pages */
 :root {
   /* Apple System Colors - Clean and Simple */
-  --hig-primary: #007AFF;        /* iOS Blue */
-  --hig-success: #34C759;        /* iOS Green */
-  --hig-warning: #FF9500;        /* iOS Orange */
-  --hig-error: #FF3B30;          /* iOS Red */
-  --hig-secondary: #5856D6;      /* iOS Purple */
+  --hig-primary: #007AFF;
+  /* iOS Blue */
+  --hig-success: #34C759;
+  /* iOS Green */
+  --hig-warning: #FF9500;
+  /* iOS Orange */
+  --hig-error: #FF3B30;
+  /* iOS Red */
+  --hig-secondary: #5856D6;
+  /* iOS Purple */
 
   /* Neutral Grays - Apple Style */
-  --hig-gray-1: #F2F2F7;         /* Light background */
-  --hig-gray-2: #E5E5EA;         /* Subtle borders */
-  --hig-gray-3: #D1D1D6;         /* Disabled elements */
-  --hig-gray-4: #8E8E93;         /* Secondary text */
-  --hig-gray-5: #636366;         /* Tertiary text */
-  --hig-gray-6: #48484A;         /* Dark backgrounds */
+  --hig-gray-1: #F2F2F7;
+  /* Light background */
+  --hig-gray-2: #E5E5EA;
+  /* Subtle borders */
+  --hig-gray-3: #D1D1D6;
+  /* Disabled elements */
+  --hig-gray-4: #8E8E93;
+  /* Secondary text */
+  --hig-gray-5: #636366;
+  /* Tertiary text */
+  --hig-gray-6: #48484A;
+  /* Dark backgrounds */
 
   /* Dark Mode Colors */
-  --hig-bg-primary: #000000;     /* True black for OLED */
-  --hig-bg-secondary: #1C1C1E;   /* Elevated surfaces */
-  --hig-bg-tertiary: #2C2C2E;    /* Cards and modals */
+  --hig-bg-primary: #000000;
+  /* True black for OLED */
+  --hig-bg-secondary: #1C1C1E;
+  /* Elevated surfaces */
+  --hig-bg-tertiary: #2C2C2E;
+  /* Cards and modals */
 
   /* Text Colors */
   --hig-text-primary: #FFFFFF;
@@ -58,7 +72,7 @@
 
 .hig-design body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
-               'Segoe UI', 'Roboto', system-ui, sans-serif;
+    'Segoe UI', 'Roboto', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
@@ -84,7 +98,8 @@
 }
 
 .hig-design.light .bg-gradient-cosmic {
-  background: hsl(30 20% 96%) !important;  /* Светло-бежевый фон */
+  background: hsl(30 20% 96%) !important;
+  /* Светло-бежевый фон */
 }
 
 .hig-design .bg-gradient-cosmic::before {
@@ -108,11 +123,12 @@
   box-shadow: var(--shadow-sm) !important;
 }
 
-/* Light theme cards - Dark Gray from image */
+/* Light theme cards - Clean White */
 .hig-design.light .glass-card {
-  background: hsl(220 13% 46%) !important;  /* Темно-серые карточки */
-  border: 1px solid hsl(220 13% 40%) !important;
-  color: white !important;
+  background: #FFFFFF !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  color: #1a1a1a !important;
 }
 
 .hig-design .glass-card-hover {
@@ -122,9 +138,11 @@
 }
 
 .hig-design.light .glass-card-hover {
-  background: hsl(220 13% 50%) !important;
-  border: 1px solid hsl(217 91% 60%) !important;  /* Синяя граница */
-  color: white !important;
+  background: #FFFFFF !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  color: #1a1a1a !important;
+  transform: translateY(-2px);
 }
 
 /* ============================================
@@ -187,7 +205,8 @@
 }
 
 .hig-design.light .bg-gradient-primary {
-  background: hsl(217 91% 60%) !important;  /* Яркий синий */
+  background: hsl(217 91% 60%) !important;
+  /* Яркий синий */
   color: white !important;
 }
 
@@ -211,8 +230,9 @@
 }
 
 .hig-design.light .bg-gradient-secondary {
-  background: hsl(220 13% 46%) !important;  /* Темно-серый */
-  color: white !important;
+  background: #E5E5EA !important;
+  /* Apple Standard Light Gray */
+  color: #000000 !important;
 }
 
 /* Success Button */
@@ -258,8 +278,15 @@
 }
 
 @keyframes higBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
 }
 
 /* Simplified hover effects - No scale transforms */
@@ -348,17 +375,49 @@
    TYPOGRAPHY SIZES - Apple Scale
    ============================================ */
 
-.hig-design .text-xs { font-size: 12px; }
-.hig-design .text-sm { font-size: 14px; }
-.hig-design .text-base { font-size: 16px; }
-.hig-design .text-lg { font-size: 18px; }
-.hig-design .text-xl { font-size: 20px; }
-.hig-design .text-2xl { font-size: 24px; }
-.hig-design .text-3xl { font-size: 28px; }
-.hig-design .text-4xl { font-size: 32px; }
-.hig-design .text-5xl { font-size: 36px; }
-.hig-design .text-6xl { font-size: 40px; }
-.hig-design .text-7xl { font-size: 48px; }
+.hig-design .text-xs {
+  font-size: 12px;
+}
+
+.hig-design .text-sm {
+  font-size: 14px;
+}
+
+.hig-design .text-base {
+  font-size: 16px;
+}
+
+.hig-design .text-lg {
+  font-size: 18px;
+}
+
+.hig-design .text-xl {
+  font-size: 20px;
+}
+
+.hig-design .text-2xl {
+  font-size: 24px;
+}
+
+.hig-design .text-3xl {
+  font-size: 28px;
+}
+
+.hig-design .text-4xl {
+  font-size: 32px;
+}
+
+.hig-design .text-5xl {
+  font-size: 36px;
+}
+
+.hig-design .text-6xl {
+  font-size: 40px;
+}
+
+.hig-design .text-7xl {
+  font-size: 48px;
+}
 
 /* ============================================
    INPUT FIELDS - Apple Style
@@ -418,6 +477,7 @@
    ============================================ */
 
 @media (max-width: 768px) {
+
   .hig-design button,
   .hig-design a[role="button"],
   .hig-design [role="button"],
@@ -537,17 +597,45 @@
    SPACING ADJUSTMENTS
    ============================================ */
 
-.hig-design .p-2 { padding: var(--spacing-sm) !important; }
-.hig-design .p-3 { padding: var(--spacing-md) !important; }
-.hig-design .p-4 { padding: var(--spacing-md) !important; }
-.hig-design .p-6 { padding: var(--spacing-lg) !important; }
-.hig-design .p-8 { padding: var(--spacing-xl) !important; }
+.hig-design .p-2 {
+  padding: var(--spacing-sm) !important;
+}
 
-.hig-design .m-2 { margin: var(--spacing-sm) !important; }
-.hig-design .m-3 { margin: var(--spacing-md) !important; }
-.hig-design .m-4 { margin: var(--spacing-md) !important; }
-.hig-design .m-6 { margin: var(--spacing-lg) !important; }
-.hig-design .m-8 { margin: var(--spacing-xl) !important; }
+.hig-design .p-3 {
+  padding: var(--spacing-md) !important;
+}
+
+.hig-design .p-4 {
+  padding: var(--spacing-md) !important;
+}
+
+.hig-design .p-6 {
+  padding: var(--spacing-lg) !important;
+}
+
+.hig-design .p-8 {
+  padding: var(--spacing-xl) !important;
+}
+
+.hig-design .m-2 {
+  margin: var(--spacing-sm) !important;
+}
+
+.hig-design .m-3 {
+  margin: var(--spacing-md) !important;
+}
+
+.hig-design .m-4 {
+  margin: var(--spacing-md) !important;
+}
+
+.hig-design .m-6 {
+  margin: var(--spacing-lg) !important;
+}
+
+.hig-design .m-8 {
+  margin: var(--spacing-xl) !important;
+}
 
 /* ============================================
    ACCESSIBILITY

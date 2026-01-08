@@ -15,6 +15,7 @@ import {
 } from './types';
 import { OpenAITTSProvider } from './providers/OpenAIProvider';
 import { ElevenLabsTTSProvider } from './providers/ElevenLabsProvider';
+import { KokoroTTSProvider } from './providers/KokoroProvider';
 
 export class TTSManager {
   private static instance: TTSManager;
@@ -45,6 +46,9 @@ export class TTSManager {
 
     // Register ElevenLabs provider
     this.providers.set('elevenlabs', new ElevenLabsTTSProvider());
+
+    // Register Kokoro provider (local WebGPU-based)
+    this.providers.set('kokoro', new KokoroTTSProvider());
   }
 
   /**

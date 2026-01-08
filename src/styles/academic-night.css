@@ -1,0 +1,316 @@
+/* ============================================
+   ACADEMIC NIGHT DESIGN SYSTEM
+   Premium Educational Platform Theme
+   ============================================ */
+
+/* ============================================
+   COLOR PALETTE - "Academic Night"
+   ============================================ */
+
+:root {
+    /* Page Background - Dark Academic Gradient */
+    --academic-bg-start: 222.2 47.4% 11.2%;
+    /* slate-900 #0f172a */
+    --academic-bg-end: 222.2 47.4% 20%;
+    /* blue-950 #172554 */
+
+    /* Content Cards - Pure White */
+    --academic-card: 0 0% 100%;
+    /* white */
+    --academic-card-foreground: 222.2 47.4% 11.2%;
+    /* slate-800 */
+
+    /* Typography on Dark Background */
+    --academic-text-light: 0 0% 100%;
+    /* white */
+    --academic-text-muted: 210 40% 96.1%;
+    /* slate-200 */
+
+    /* Typography on White Cards */
+    --academic-text-dark: 222.2 47.4% 11.2%;
+    /* slate-800 */
+    --academic-text-secondary: 215.4 16.3% 46.9%;
+    /* slate-500 */
+
+    /* Primary Action - Indigo to Violet Gradient */
+    --academic-primary-start: 238.7 83.5% 56.9%;
+    /* indigo-600 */
+    --academic-primary-end: 258.3 89.5% 66.3%;
+    /* violet-600 */
+
+    /* Success / Error Colors */
+    --academic-success: 160.1 84.1% 39.4%;
+    /* emerald-500 */
+    --academic-error: 346.8 77.2% 49.8%;
+    /* rose-500 */
+
+    /* Border Colors */
+    --academic-border-dark: 217.2 32.6% 17.5%;
+    /* slate-800 */
+    --academic-border-light: 214.3 31.8% 91.4%;
+    /* slate-200 */
+}
+
+/* ============================================
+   BACKGROUND UTILITIES
+   ============================================ */
+
+.academic-bg {
+    background: linear-gradient(to bottom,
+            hsl(var(--academic-bg-start)),
+            hsl(var(--academic-bg-end)));
+    min-height: 100vh;
+}
+
+.academic-bg-gradient {
+    background: linear-gradient(135deg,
+            #0f172a 0%,
+            #1e293b 50%,
+            #172554 100%);
+}
+
+/* Academic Background with Dot Grid - like Screenshot 1 */
+.academic-bg-dots {
+    position: relative;
+    background: linear-gradient(180deg,
+            #0f172a 0%,
+            #1e1b4b 50%,
+            #581c87 100%);
+}
+
+.academic-bg-dots::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.academic-bg-dots>* {
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================
+   CARD UTILITIES - White Floating Cards
+   ============================================ */
+
+.academic-card {
+    background: white !important;
+    border-radius: 1.5rem !important;
+    box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #1e293b !important;
+}
+
+.academic-card-hover:hover {
+    transform: scale(1.02) translateY(-4px);
+    box-shadow:
+        0 35px 60px -15px rgba(0, 0, 0, 0.3),
+        0 0 0 2px rgba(99, 102, 241, 0.4) !important;
+}
+
+.academic-card-interactive {
+    background: white !important;
+    border-radius: 1.5rem !important;
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    color: #1e293b !important;
+}
+
+.academic-card-interactive:hover {
+    transform: scale(1.05);
+    box-shadow:
+        0 30px 50px -15px rgba(0, 0, 0, 0.25),
+        0 0 0 2px rgba(99, 102, 241, 0.5) !important;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+/* Text on Dark Background */
+.academic-text-light {
+    color: white;
+}
+
+.academic-text-muted-light {
+    color: hsl(210 40% 96.1%);
+    /* slate-200 */
+}
+
+/* Text on White Cards */
+.academic-text-dark {
+    color: hsl(222.2 47.4% 11.2%);
+    /* slate-800 */
+}
+
+.academic-text-muted-dark {
+    color: hsl(215.4 16.3% 46.9%);
+    /* slate-500 */
+}
+
+/* ============================================
+   BUTTON STYLES
+   ============================================ */
+
+/* Primary Button - Gradient */
+.academic-btn-primary {
+    background: linear-gradient(to right,
+            hsl(238.7 83.5% 56.9%),
+            /* indigo-600 */
+            hsl(258.3 89.5% 66.3%)
+            /* violet-600 */
+        );
+    color: white;
+    font-weight: 600;
+    border-radius: 9999px;
+    /* full rounded */
+    padding: 0.75rem 2rem;
+    box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+}
+
+.academic-btn-primary:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 15px 35px -5px rgba(99, 102, 241, 0.5);
+    transform: translateY(-2px);
+}
+
+.academic-btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Secondary Button - Outline */
+.academic-btn-secondary {
+    background: transparent;
+    color: hsl(210 40% 96.1%);
+    /* slate-200 */
+    font-weight: 500;
+    border-radius: 9999px;
+    padding: 0.75rem 2rem;
+    border: 1px solid hsl(215.3 25% 26.7%);
+    /* slate-600 */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.academic-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: hsl(215.4 20.2% 65.1%);
+    /* slate-400 */
+}
+
+/* Button on White Cards */
+.academic-btn-on-card {
+    background: hsl(215.3 25% 26.7%);
+    /* slate-600 */
+    color: white;
+    font-weight: 500;
+    border-radius: 0.75rem;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.academic-btn-on-card:hover {
+    background: hsl(217.2 32.6% 17.5%);
+    /* slate-700 */
+}
+
+/* ============================================
+   PROGRESS BAR
+   ============================================ */
+
+.academic-progress-track {
+    background: rgba(30, 41, 59, 0.5);
+    /* slate-800/50 */
+    border-radius: 9999px;
+    height: 8px;
+    overflow: hidden;
+}
+
+.academic-progress-fill {
+    background: linear-gradient(to right,
+            hsl(238.7 83.5% 56.9%),
+            /* indigo-500 */
+            hsl(258.3 89.5% 66.3%)
+            /* violet-500 */
+        );
+    border-radius: 9999px;
+    height: 100%;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   GAMIFICATION COLORS
+   ============================================ */
+
+.academic-success {
+    color: hsl(160.1 84.1% 39.4%);
+    /* emerald-500 */
+}
+
+.academic-error {
+    color: hsl(346.8 77.2% 49.8%);
+    /* rose-500 */
+}
+
+.academic-success-bg {
+    background: hsl(160.1 84.1% 39.4%);
+    color: white;
+}
+
+.academic-error-bg {
+    background: hsl(346.8 77.2% 49.8%);
+    color: white;
+}
+
+/* ============================================
+   INPUT FIELDS (on white cards)
+   ============================================ */
+
+.academic-input {
+    background: hsl(210 40% 96.1%);
+    /* slate-100 */
+    border: 1px solid hsl(214.3 31.8% 91.4%);
+    /* slate-200 */
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: hsl(222.2 47.4% 11.2%);
+    /* slate-800 */
+    transition: all 0.2s ease;
+}
+
+.academic-input:focus {
+    outline: none;
+    border-color: hsl(238.7 83.5% 56.9%);
+    /* indigo-500 */
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.academic-input::placeholder {
+    color: hsl(215.4 16.3% 46.9%);
+    /* slate-500 */
+}
+
+/* ============================================
+   OVERLAY / MODAL
+   ============================================ */
+
+.academic-overlay {
+    background: rgba(15, 23, 42, 0.8);
+    /* slate-900/80 */
+    backdrop-filter: blur(4px);
+}
+
+.academic-modal {
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}

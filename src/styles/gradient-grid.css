@@ -6,11 +6,10 @@
 /* Grid Pattern Background with Gradient */
 .gradient-grid-bg {
   position: relative;
-  background: linear-gradient(135deg,
-    hsl(217, 91%, 60%) 0%,    /* Bright Blue */
-    hsl(250, 95%, 65%) 50%,   /* Violet */
-    hsl(280, 91%, 60%) 100%   /* Purple */
-  );
+  background: linear-gradient(180deg,
+      #0f172a 0%,
+      #1e1b4b 40%,
+      #581c87 100%) !important;
 }
 
 .gradient-grid-bg::before {
@@ -18,21 +17,24 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
-  background-size: 45px 45px;
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 30px 30px;
   pointer-events: none;
   z-index: 0;
+}
+
+.gradient-grid-bg>* {
+  position: relative;
+  z-index: 1;
 }
 
 /* Alternative: Dot Grid Pattern */
 .gradient-grid-dots {
   position: relative;
-  background: linear-gradient(135deg,
-    hsl(217, 91%, 60%) 0%,
-    hsl(250, 95%, 65%) 50%,
-    hsl(280, 91%, 60%) 100%
-  );
+  background: linear-gradient(180deg,
+      #0f172a 0%,
+      #1e1b4b 40%,
+      #581c87 100%);
 }
 
 .gradient-grid-dots::before {
@@ -40,23 +42,24 @@
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle at center, rgba(255, 255, 255, 0.2) 2px, transparent 2px);
-  background-size: 40px 40px;
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 30px 30px;
   pointer-events: none;
   z-index: 0;
+}
+
+.gradient-grid-dots>* {
+  position: relative;
+  z-index: 1;
 }
 
 /* Animated Gradient Background */
 .gradient-grid-animated {
   position: relative;
-  background: linear-gradient(135deg,
-    hsl(217, 91%, 60%),
-    hsl(250, 95%, 65%),
-    hsl(280, 91%, 60%),
-    hsl(320, 100%, 60%)
-  );
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
+  background: linear-gradient(180deg,
+      #0f172a 0%,
+      #1e1b4b 40%,
+      #581c87 100%);
 }
 
 .gradient-grid-animated::before {
@@ -64,66 +67,30 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
-  background-size: 45px 45px;
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 30px 30px;
   pointer-events: none;
   z-index: 0;
 }
 
+.gradient-grid-animated>* {
+  position: relative;
+  z-index: 1;
+}
+
 @keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
-/* Light Mode Grid with Subtle Gradient */
-.light .gradient-grid-bg {
-  background: linear-gradient(135deg,
-    hsl(210, 100%, 97%) 0%,   /* Very light blue */
-    hsl(250, 100%, 98%) 50%,  /* Very light violet */
-    hsl(280, 100%, 98%) 100%  /* Very light purple */
-  );
-}
-
-.light .gradient-grid-bg::before {
-  background-image:
-    linear-gradient(to right, rgba(99, 102, 241, 0.12) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(99, 102, 241, 0.12) 1px, transparent 1px);
-  background-size: 45px 45px;
-}
-
-/* Light Mode Dot Grid */
-.light .gradient-grid-dots {
-  background: linear-gradient(135deg,
-    hsl(210, 100%, 97%),
-    hsl(250, 100%, 98%),
-    hsl(280, 100%, 98%)
-  );
-}
-
-.light .gradient-grid-dots::before {
-  background-image:
-    radial-gradient(circle at center, rgba(99, 102, 241, 0.18) 2px, transparent 2px);
-  background-size: 40px 40px;
-}
-
-/* Light Mode Animated Gradient */
-.light .gradient-grid-animated {
-  background: linear-gradient(135deg,
-    hsl(210, 100%, 97%),
-    hsl(250, 100%, 98%),
-    hsl(280, 100%, 98%),
-    hsl(320, 100%, 98%)
-  );
-  background-size: 400% 400%;
-}
-
-.light .gradient-grid-animated::before {
-  background-image:
-    linear-gradient(to right, rgba(99, 102, 241, 0.12) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(99, 102, 241, 0.12) 1px, transparent 1px);
-  background-size: 45px 45px;
-}
+/* Light mode overrides removed - always use dark star background */
 
 /* Mesh Gradient (Modern 2025 Trend) */
 .gradient-mesh {
@@ -166,10 +133,10 @@
 }
 
 /* Ensure content is above the grid */
-.gradient-grid-bg > *:not(::before),
-.gradient-grid-dots > *:not(::before),
-.gradient-grid-animated > *:not(::before),
-.gradient-mesh > *:not(::before) {
+.gradient-grid-bg>*:not(::before),
+.gradient-grid-dots>*:not(::before),
+.gradient-grid-animated>*:not(::before),
+.gradient-mesh>*:not(::before) {
   position: relative;
   z-index: 1;
 }
@@ -202,10 +169,9 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg,
-    hsl(217, 91%, 60%) 0%,
-    hsl(250, 95%, 65%) 50%,
-    hsl(280, 91%, 60%) 100%
-  );
+      hsl(217, 91%, 60%) 0%,
+      hsl(250, 95%, 65%) 50%,
+      hsl(280, 91%, 60%) 100%);
   position: relative;
 }
 
@@ -222,10 +188,9 @@
 
 .light .hero-gradient-grid {
   background: linear-gradient(135deg,
-    hsl(210, 100%, 97%),
-    hsl(250, 100%, 98%),
-    hsl(280, 100%, 98%)
-  );
+      hsl(210, 100%, 97%),
+      hsl(250, 100%, 98%),
+      hsl(280, 100%, 98%));
 }
 
 .light .hero-gradient-grid::before {

@@ -138,9 +138,9 @@ export const TrainingPage = () => {
       return (
         <div className="h-screen gradient-grid-bg flex items-center justify-center">
           <div className="text-center glass-card rounded-2xl md:rounded-3xl p-6 md:p-8 mx-4">
-            <Rocket className="h-12 w-12 md:h-16 md:w-16 animate-bounce-subtle mx-auto text-primary mb-4 md:mb-6 glow-cyan" />
-            <Loader2 className="h-8 w-8 md:h-12 md:w-12 animate-spin mx-auto text-primary mb-3 md:mb-4" />
-            <p className="text-sm md:text-lg text-glow-cyan font-display">Loading Mission Control...</p>
+            <Rocket className="h-12 w-12 md:h-16 md:w-16 animate-bounce mx-auto text-indigo-500 mb-4 md:mb-6" />
+            <Loader2 className="h-8 w-8 md:h-12 md:w-12 animate-spin mx-auto text-indigo-500 mb-3 md:mb-4" />
+            <p className="text-sm md:text-lg text-slate-700 font-semibold">Loading Mission Control...</p>
           </div>
         </div>
       );
@@ -236,9 +236,9 @@ export const TrainingPage = () => {
     return (
       <div className="h-screen gradient-grid-bg flex items-center justify-center">
         <div className="text-center glass-card rounded-2xl md:rounded-3xl p-6 md:p-8 mx-4">
-          <Target className="h-12 w-12 md:h-16 md:w-16 animate-bounce-subtle mx-auto text-secondary mb-4 md:mb-6 glow-purple" />
-          <Loader2 className="h-8 w-8 md:h-12 md:w-12 animate-spin mx-auto text-secondary mb-3 md:mb-4" />
-          <p className="text-sm md:text-lg text-glow-purple font-display">Loading Training Levels...</p>
+          <Target className="h-12 w-12 md:h-16 md:w-16 animate-bounce mx-auto text-violet-500 mb-4 md:mb-6" />
+          <Loader2 className="h-8 w-8 md:h-12 md:w-12 animate-spin mx-auto text-violet-500 mb-3 md:mb-4" />
+          <p className="text-sm md:text-lg text-slate-700 font-semibold">Loading Training Levels...</p>
         </div>
       </div>
     );
@@ -260,8 +260,8 @@ export const TrainingPage = () => {
               message={selectedLevel
                 ? `🎯 Excellent! Choose a level from ${selectedLevel.display_name}`
                 : mode === 'olympic'
-                ? "🏆 Olympic Mode - Ready for the challenge?"
-                : "🚀 Ready to practice?"
+                  ? "🏆 Olympic Mode - Ready for the challenge?"
+                  : "🚀 Ready to practice?"
               }
             />
           </div>
@@ -271,8 +271,8 @@ export const TrainingPage = () => {
                 {selectedLevel
                   ? `🎯 ${selectedLevel.display_name}`
                   : mode === 'olympic'
-                  ? "🏆 Olympic Mode"
-                  : "🚀 Ready to practice?"}
+                    ? "🏆 Olympic Mode"
+                    : "🚀 Ready to practice?"}
               </p>
             </div>
           </div>
@@ -280,8 +280,8 @@ export const TrainingPage = () => {
             {selectedLevel
               ? 'Select a level to start'
               : mode === 'olympic'
-              ? 'Choose your Olympic difficulty level'
-              : 'Choose your difficulty level'}
+                ? 'Choose your Olympic difficulty level'
+                : 'Choose your difficulty level'}
           </p>
 
           {/* XP Progress */}
@@ -358,7 +358,7 @@ export const TrainingPage = () => {
                   return (
                     <div
                       key={level.id}
-                      className="glass-card rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 hover:glass-card-hover transition-all cursor-pointer group border-2 border-primary/20 hover:border-primary"
+                      className="bg-gradient-to-br from-white/95 to-slate-100/90 backdrop-blur-sm rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 hover:scale-[1.02] transition-all cursor-pointer group border border-white/30 shadow-xl"
                       onClick={() => setSelectedLevel(level)}
                     >
                       <div className="text-center">
@@ -367,25 +367,24 @@ export const TrainingPage = () => {
                             {getLevelIcon(level.name)}
                           </div>
                         </div>
-                        <h4 className="text-lg md:text-xl lg:text-2xl font-bold mb-2 md:mb-3">{level.display_name}</h4>
-                        <p className="text-xs md:text-sm text-muted-foreground mb-3 md:mb-4 lg:mb-6">{level.description}</p>
+                        <h4 className="text-lg md:text-xl lg:text-2xl font-bold mb-2 md:mb-3 text-slate-800">{level.display_name}</h4>
+                        <p className="text-xs md:text-sm text-slate-600 mb-3 md:mb-4 lg:mb-6">{level.description}</p>
 
-                        <div className="space-y-2 md:space-y-3 mb-3 md:mb-4 lg:mb-6 glass-card rounded-lg md:rounded-xl p-2 md:p-3 lg:p-4 border border-primary/10">
+                        <div className="space-y-2 md:space-y-3 mb-3 md:mb-4 lg:mb-6 bg-slate-50/80 rounded-lg md:rounded-xl p-2 md:p-3 lg:p-4 border border-slate-200">
                           <div className="flex items-center justify-between text-xs md:text-sm">
-                            <span className="text-muted-foreground">Rounds:</span>
-                            <span className="font-bold text-primary">{sublevelCount}</span>
+                            <span className="text-slate-600">Rounds:</span>
+                            <span className="font-bold text-indigo-600">{sublevelCount}</span>
                           </div>
                           <div className="flex items-center justify-between text-xs md:text-sm">
-                            <span className="text-muted-foreground">Difficulty:</span>
+                            <span className="text-slate-600">Difficulty:</span>
                             <div className="flex gap-1">
                               {[1, 2, 3].map((star) => (
                                 <Star
                                   key={star}
-                                  className={`h-3 w-3 md:h-4 md:w-4 ${
-                                    star <= difficulty
-                                      ? 'fill-accent text-accent'
-                                      : 'text-muted'
-                                  }`}
+                                  className={`h-3 w-3 md:h-4 md:w-4 ${star <= difficulty
+                                    ? 'fill-amber-400 text-amber-400'
+                                    : 'text-slate-300'
+                                    }`}
                                 />
                               ))}
                             </div>
@@ -430,21 +429,21 @@ export const TrainingPage = () => {
                   {sublevels[selectedLevel.id].map((sublevel, index) => (
                     <div
                       key={sublevel.id}
-                      className="glass-card rounded-xl md:rounded-2xl p-3 md:p-4 lg:p-6 hover:glass-card-hover transition-all cursor-pointer group border-2 border-accent/20 hover:border-accent"
+                      className="bg-gradient-to-br from-white/95 to-slate-100/90 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-4 lg:p-6 hover:scale-[1.02] transition-all cursor-pointer group border border-white/30 shadow-xl"
                       onClick={() => handleStartPractice(sublevel.id)}
                     >
                       <div className="flex items-start justify-between mb-2 md:mb-3">
                         <div className="flex-1">
-                          <div className="text-[10px] md:text-xs text-accent font-bold mb-1">LEVEL {index + 1}</div>
-                          <h4 className="text-sm md:text-base lg:text-lg font-bold">{sublevel.display_name}</h4>
+                          <div className="text-[10px] md:text-xs text-indigo-600 font-bold mb-1">LEVEL {index + 1}</div>
+                          <h4 className="text-sm md:text-base lg:text-lg font-bold text-slate-800">{sublevel.display_name}</h4>
                         </div>
-                        <div className="glass-card rounded-full p-1.5 md:p-2 group-hover:bg-accent/20 transition-colors">
-                          <ChevronRight className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground group-hover:text-accent transition-colors" />
+                        <div className="bg-slate-100 rounded-full p-1.5 md:p-2 group-hover:bg-indigo-100 transition-colors">
+                          <ChevronRight className="h-4 w-4 md:h-5 md:w-5 text-slate-500 group-hover:text-indigo-600 transition-colors" />
                         </div>
                       </div>
 
                       {sublevel.description && (
-                        <p className="text-xs md:text-sm text-muted-foreground mb-3 md:mb-4">
+                        <p className="text-xs md:text-sm text-slate-600 mb-3 md:mb-4">
                           {sublevel.description}
                         </p>
                       )}

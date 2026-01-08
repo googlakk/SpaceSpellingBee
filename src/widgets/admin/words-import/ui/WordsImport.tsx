@@ -6,9 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, Loader2, RefreshCw } from 'lucide-react';
+import { Upload, Loader2, RefreshCw, Type } from 'lucide-react';
 import { toast } from 'sonner';
 import { Progress } from '@/components/ui/progress';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import { useEffect } from 'react';
 
 export const WordsImport = () => {
@@ -21,6 +23,8 @@ export const WordsImport = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentWord, setCurrentWord] = useState('');
+  const [wordListText, setWordListText] = useState('');
+  const [replaceExisting, setReplaceExisting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -158,10 +162,30 @@ export const WordsImport = () => {
           .maybeSingle();
 
         if (existingWord) {
-          console.log(`⏭️ Word "${word}" already exists in this sublevel, skipping...`);
-          skippedCount++;
-          setProgress(((i + 1) / words.length) * 100);
-          continue;
+          if (replaceExisting) {
+            // Delete existing word and its audio
+            console.log(`🔄 Word "${word}" exists, replacing...`);
+
+            // Delete old audio from storage if exists
+            if (existingWord.audio_url) {
+              try {
+                const urlPath = existingWord.audio_url.split('/word-audio/')[1];
+                if (urlPath) {
+                  await supabase.storage.from('word-audio').remove([urlPath]);
+                }
+              } catch (e) {
+                console.warn('Could not delete old audio:', e);
+              }
+            }
+
+            // Delete the word record
+            await supabase.from('words').delete().eq('id', existingWord.id);
+          } else {
+            console.log(`⏭️ Word "${word}" already exists in this sublevel, skipping...`);
+            skippedCount++;
+            setProgress(((i + 1) / words.length) * 100);
+            continue;
+          }
         }
 
         let audioUrl: string | null = null;
@@ -279,6 +303,7 @@ export const WordsImport = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+    setWordListText('');
   };
 
   const selectedLanguageData = languages.find(l => l.id === selectedLanguage);
@@ -287,9 +312,9 @@ export const WordsImport = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Import Words from File</CardTitle>
+        <CardTitle>Import Words</CardTitle>
         <CardDescription>
-          Select a sublevel and upload a text file with one word per line. Audio will be generated automatically.
+          Import words from a file or paste them directly. Audio will be generated automatically.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -372,8 +397,70 @@ export const WordsImport = () => {
             )}
           </div>
 
+          {/* Replace Existing Toggle */}
+          <div className="flex items-center justify-between p-4 bg-orange-50 dark:bg-orange-950 border border-orange-200 dark:border-orange-800 rounded-lg">
+            <div className="space-y-0.5">
+              <Label htmlFor="replace-existing" className="text-orange-900 dark:text-orange-100">Replace existing words</Label>
+              <p className="text-xs text-orange-700 dark:text-orange-300">
+                If enabled, existing words will be deleted and their audio regenerated
+              </p>
+            </div>
+            <Switch
+              id="replace-existing"
+              checked={replaceExisting}
+              onCheckedChange={setReplaceExisting}
+              disabled={isUploading}
+            />
+          </div>
+
+          {/* Text Input Section */}
+          <div className="space-y-3">
+            <Label>Paste Word List</Label>
+            <Textarea
+              placeholder="sun&#10;get&#10;run&#10;find&#10;fun&#10;take&#10;down&#10;road&#10;sing&#10;grow"
+              value={wordListText}
+              onChange={(e) => setWordListText(e.target.value)}
+              disabled={isUploading || !selectedSublevel}
+              className="min-h-[150px] font-mono"
+            />
+            <Button
+              onClick={() => {
+                const words = parseWordList(wordListText);
+                if (words.length === 0) {
+                  toast.error('Please enter at least one word');
+                  return;
+                }
+                processWords(words);
+              }}
+              disabled={!selectedSublevel || isUploading || !wordListText.trim()}
+              className="w-full"
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Type className="mr-2 h-4 w-4" />
+                  Import from Text ({parseWordList(wordListText).length} words)
+                </>
+              )}
+            </Button>
+          </div>
+
+          {/* Divider */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">or upload a file</span>
+            </div>
+          </div>
+
           {/* File Upload */}
-          <div className="border-2 border-dashed rounded-lg p-8 text-center">
+          <div className="border-2 border-dashed rounded-lg p-6 text-center">
             <input
               ref={fileInputRef}
               type="file"
@@ -383,6 +470,7 @@ export const WordsImport = () => {
               disabled={!selectedSublevel || isUploading}
             />
             <Button
+              variant="outline"
               onClick={() => fileInputRef.current?.click()}
               disabled={!selectedSublevel || isUploading}
               className="w-full"
@@ -395,7 +483,7 @@ export const WordsImport = () => {
               ) : (
                 <>
                   <Upload className="mr-2 h-4 w-4" />
-                  Upload Word List
+                  Upload Word List (.txt, .csv)
                 </>
               )}
             </Button>
@@ -422,7 +510,7 @@ export const WordsImport = () => {
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h4 className="font-medium text-blue-900 mb-2">File Format</h4>
           <pre className="text-sm bg-white p-3 rounded border overflow-x-auto">
-{`sun
+            {`sun
 get
 run
 find

@@ -7,7 +7,7 @@
  */
 
 // Provider type enum
-export type TTSProviderType = 'openai' | 'elevenlabs';
+export type TTSProviderType = 'openai' | 'elevenlabs' | 'kokoro';
 
 // Voice information interface (common for all providers)
 export interface TTSVoice {
@@ -41,12 +41,17 @@ export interface ElevenLabsV3TTSSettings {
 export type ElevenLabsTTSSettings = ElevenLabsV2TTSSettings | ElevenLabsV3TTSSettings;
 
 // Union type for all provider settings
-export type TTSSettings = OpenAITTSSettings | ElevenLabsTTSSettings;
+export type TTSSettings = OpenAITTSSettings | ElevenLabsTTSSettings | KokoroTTSSettings;
+
+// Settings for Kokoro TTS (local)
+export interface KokoroTTSSettings {
+  speed: number; // 0.5 to 2.0, default 1.0
+}
 
 // Configuration for a TTS provider
 export interface TTSProviderConfig {
   provider: TTSProviderType;
-  voiceId: string;
+  voiceId: string; // For Kokoro: 'af_bella', etc.
   voiceName?: string;
   settings: TTSSettings;
 }

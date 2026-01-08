@@ -13,6 +13,7 @@ export type {
   TTSSettings,
   OpenAITTSSettings,
   ElevenLabsTTSSettings,
+  KokoroTTSSettings,
   TTSProviderConfig,
 } from './types';
 
@@ -25,6 +26,7 @@ export {
 // Export providers
 export { OpenAITTSProvider } from './providers/OpenAIProvider';
 export { ElevenLabsTTSProvider } from './providers/ElevenLabsProvider';
+export { KokoroTTSProvider } from './providers/KokoroProvider';
 
 // Export manager and convenience functions
 export {

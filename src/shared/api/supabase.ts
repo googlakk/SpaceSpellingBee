@@ -17,7 +17,7 @@ export interface Language {
   native_name: string;
   flag_emoji: string;
   is_active: boolean;
-  tts_provider: 'openai' | 'elevenlabs' | null; // TTS provider type
+  tts_provider: 'openai' | 'elevenlabs' | 'kokoro' | null; // TTS provider type
   voice_id: string | null;
   voice_name: string | null;
   voice_settings: Record<string, any> | null; // Flexible settings for any provider

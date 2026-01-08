@@ -58,13 +58,12 @@ const WordListItem = memo<{
 
   return (
     <div
-      className={`glass-card p-4 rounded-xl transition-all ${
-        isCurrent
-          ? 'border-2 border-primary glow-cyan bg-primary/10'
-          : isCompleted
+      className={`glass-card p-4 rounded-xl transition-all ${isCurrent
+        ? 'border-2 border-primary glow-cyan bg-primary/10'
+        : isCompleted
           ? 'border border-success/30 bg-success/5'
           : 'border border-muted/20'
-      }`}
+        }`}
       style={{ contentVisibility: 'auto', containIntrinsicSize: '100px' }}
     >
       <div className="flex items-center gap-2 mb-3">
@@ -284,9 +283,9 @@ export const PracticePage = () => {
     return (
       <div className="min-h-screen gradient-grid-bg flex items-center justify-center">
         <div className="text-center glass-card rounded-3xl p-12">
-          <Rocket className="h-16 w-16 animate-bounce-subtle mx-auto text-primary mb-6 glow-cyan" />
-          <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary mb-4" />
-          <p className="text-lg text-glow-cyan font-display">Loading Mission Data...</p>
+          <Rocket className="h-16 w-16 animate-bounce mx-auto text-indigo-500 mb-6" />
+          <Loader2 className="h-12 w-12 animate-spin mx-auto text-indigo-500 mb-4" />
+          <p className="text-lg text-slate-700 font-semibold">Loading Mission Data...</p>
         </div>
       </div>
     );
@@ -296,13 +295,162 @@ export const PracticePage = () => {
     return (
       <div className="min-h-screen gradient-grid-bg flex items-center justify-center">
         <div className="text-center glass-card rounded-3xl p-12">
-          <Trophy className="h-16 w-16 mx-auto text-accent mb-6 glow-pink" />
-          <p className="text-lg text-muted-foreground">No mission data available</p>
+          <Trophy className="h-16 w-16 mx-auto text-amber-500 mb-6" />
+          <p className="text-lg text-slate-500">No mission data available</p>
         </div>
       </div>
     );
   }
 
+  // ===============================================
+  // OLYMPIC PRESENTATION MODE - Big Screen Display
+  // ===============================================
+  if (isOlympicMode) {
+    return (
+      <div className="h-screen gradient-grid-bg flex flex-col overflow-hidden">
+        {/* Minimal Top Bar - Just progress */}
+        <div className="absolute top-0 left-0 right-0 z-10 p-4 flex items-center justify-between">
+          <div className="text-white/60 text-lg font-medium">
+            Spelling Olympiad
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-2xl font-bold text-white">
+              {currentWordIndex + 1} <span className="text-white/50">/</span> {totalWords}
+            </span>
+          </div>
+        </div>
+
+        {/* Progress Bar - Bottom */}
+        <div className="absolute bottom-0 left-0 right-0 z-10">
+          <div className="h-2 bg-white/10">
+            <div
+              className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-500"
+              style={{ width: `${((currentWordIndex + 1) / totalWords) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Main Content - Word Focus */}
+        <main className="flex-1 flex flex-col items-center justify-center p-8 relative">
+          {/* Word Display Card */}
+          <div className="w-full max-w-6xl">
+            {isTransitioning ? (
+              <div className="bg-gradient-to-br from-white/95 to-slate-100/95 backdrop-blur-md rounded-[3rem] shadow-2xl p-16 lg:p-24 flex items-center justify-center min-h-[400px] lg:min-h-[500px]">
+                <Loader2 className="h-20 w-20 animate-spin text-indigo-500" />
+              </div>
+            ) : (
+              <div className="bg-gradient-to-br from-white to-slate-50 rounded-[3rem] shadow-2xl p-12 lg:p-20 xl:p-24 flex items-center justify-center min-h-[400px] lg:min-h-[500px] animate-scale-in border border-white/50">
+                <p
+                  className="font-bold text-center text-slate-800 tracking-tight leading-tight"
+                  style={{
+                    fontSize: `clamp(2rem, ${Math.max(3, 12 - currentWord.word.length * 0.3)}vw, 8rem)`,
+                    wordBreak: 'break-word',
+                    overflowWrap: 'break-word',
+                  }}
+                >
+                  {currentWord.word}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Controls Row */}
+          <div className="mt-8 flex items-center gap-6">
+            {/* Replay Audio */}
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => {
+                const audio = new Audio(currentWord.audio_url || `https://api.voicerss.org/?key=YOUR_API_KEY&hl=en-us&src=${encodeURIComponent(currentWord.word)}`);
+                audio.play().catch(err => {
+                  console.error('Audio playback failed:', err);
+                  toast.error('Audio playback failed');
+                });
+              }}
+              disabled={isTransitioning}
+              className="rounded-full bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 px-8 py-6 text-lg"
+            >
+              <Volume2 className="h-6 w-6 mr-3" />
+              Replay Audio
+            </Button>
+
+            {/* Word List */}
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setShowAllWords(true)}
+              disabled={isTransitioning}
+              className="rounded-full bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 px-6 py-6"
+            >
+              <List className="h-6 w-6" />
+            </Button>
+          </div>
+        </main>
+
+        {/* Navigation - Large Buttons at Sides */}
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 p-4">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={handlePreviousWord}
+            disabled={currentWordIndex === 0 || isTransitioning}
+            className="rounded-full bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 h-20 w-20 p-0"
+          >
+            <ChevronLeft className="h-10 w-10" />
+          </Button>
+        </div>
+
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 p-4">
+          <Button
+            size="lg"
+            onClick={handleNextWord}
+            disabled={currentWordIndex === totalWords - 1 || isTransitioning}
+            className="rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white h-20 w-20 p-0 shadow-xl"
+          >
+            <ChevronRight className="h-10 w-10" />
+          </Button>
+        </div>
+
+        {/* Word List Modal */}
+        <Dialog open={showAllWords} onOpenChange={setShowAllWords}>
+          <DialogContent className="glass-card max-w-4xl max-h-[80vh] overflow-hidden border-primary/30">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white flex items-center gap-3">
+                <List className="h-6 w-6 text-primary" />
+                All Words ({totalWords})
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground">
+                Click on a word to jump to it
+              </DialogDescription>
+            </DialogHeader>
+            <div className="overflow-y-auto max-h-[60vh] pr-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 py-4">
+              {words.map((word, index) => (
+                <WordListItem
+                  key={word.id}
+                  word={word}
+                  index={index}
+                  currentWordIndex={currentWordIndex}
+                  onWordClick={handleWordClick}
+                  onPlayAudio={handlePlayAudio}
+                  isDisabled={isTransitioning}
+                />
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Showing word indicator */}
+        <div className="absolute bottom-8 right-8 text-white/50 text-sm flex items-center gap-2">
+          <Sparkles className="h-4 w-4" />
+          Showing word {currentWordIndex + 1}
+        </div>
+      </div>
+    );
+  }
+
+  // ===============================================
+  // PRACTICE MODE - Standard UI
+  // ===============================================
   return (
     <div className="h-screen gradient-grid-bg flex flex-col overflow-hidden">
 
@@ -314,7 +462,7 @@ export const PracticePage = () => {
         />
       </div>
 
-      {/* Main Content - Olympic Mode Display */}
+      {/* Main Content - Practice Mode Display */}
       <main className="flex-1 flex flex-col relative px-4 overflow-hidden">
         <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full py-2 md:py-4">
 
@@ -323,7 +471,7 @@ export const PracticePage = () => {
             <div className="glass-card rounded-xl p-2 md:p-3">
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs md:text-sm text-muted-foreground">
-                  {isOlympicMode ? 'Olympic Mode' : 'Practice Mode'}
+                  Practice Mode
                 </span>
                 <span className="text-xs md:text-sm font-bold text-primary">{currentWordIndex + 1} / {totalWords}</span>
               </div>
@@ -339,29 +487,21 @@ export const PracticePage = () => {
           <div className="flex-1 flex flex-col justify-center items-center min-h-0 py-4 gap-6">
 
             {/* Word Display - Minimal Card with Loading State */}
-            <div className="w-full max-w-3xl relative">
+            <div className="w-full max-w-4xl relative">
               {isTransitioning ? (
-                <div className="glass-card p-12 md:p-20 rounded-3xl border border-muted/10 flex items-center justify-center min-h-[200px] md:min-h-[300px]">
-                  <Loader2 className="h-12 w-12 md:h-16 md:w-16 animate-spin text-primary" />
-                </div>
-              ) : isOlympicMode ? (
-                // Olympic Mode: Show word
-                <div className="glass-card p-8 md:p-16 rounded-3xl border border-muted/10 animate-scale-in">
-                  <p className="text-5xl md:text-7xl lg:text-8xl font-bold text-center tracking-tight break-words">
-                    {currentWord.word}
-                  </p>
+                <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm p-12 md:p-20 rounded-3xl border border-white/20 flex items-center justify-center min-h-[250px] md:min-h-[350px]">
+                  <Loader2 className="h-12 w-12 md:h-16 md:w-16 animate-spin text-white" />
                 </div>
               ) : (
-                // Practice Mode: Show input
-                <div className="glass-card p-8 md:p-12 rounded-3xl border border-muted/10 animate-scale-in space-y-6">
+                // Practice Mode: Show input in light card
+                <div className="bg-gradient-to-br from-white/95 to-slate-100/95 backdrop-blur-sm p-8 md:p-12 rounded-3xl border border-white/30 shadow-2xl animate-scale-in space-y-6">
                   {/* Feedback Message */}
                   {feedback && (
                     <div
-                      className={`flex items-center justify-center gap-3 p-4 rounded-xl ${
-                        feedback === 'correct'
-                          ? 'bg-success/20 border border-success'
-                          : 'bg-destructive/20 border border-destructive'
-                      }`}
+                      className={`flex items-center justify-center gap-3 p-4 rounded-xl ${feedback === 'correct'
+                        ? 'bg-success/20 border border-success'
+                        : 'bg-destructive/20 border border-destructive'
+                        }`}
                     >
                       {feedback === 'correct' ? (
                         <>
@@ -440,75 +580,35 @@ export const PracticePage = () => {
 
           {/* Bottom Section: Navigation Controls */}
           <div className="flex-shrink-0 mb-3 md:mb-4">
-            {isOlympicMode ? (
-              // Olympic Mode: Previous / List / Next
-              <div className="flex items-center justify-between gap-3">
-                {/* Previous Button */}
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={handlePreviousWord}
-                  disabled={currentWordIndex === 0 || isTransitioning}
-                  className="flex-1 rounded-full glass-card"
-                >
-                  <ChevronLeft className="h-5 w-5 md:h-6 md:w-6 mr-2" />
-                  Previous
-                </Button>
+            <div className="flex items-center justify-center gap-3">
+              {/* Skip Button */}
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => {
+                  if (feedback !== 'correct') {
+                    toast.info('Skipping to next word');
+                    handleNextWord();
+                  }
+                }}
+                disabled={feedback === 'correct' || isTransitioning}
+                className="flex-1 rounded-full glass-card"
+              >
+                <SkipForward className="h-5 w-5 md:h-6 md:w-6 mr-2" />
+                Skip
+              </Button>
 
-                {/* Word List Button */}
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => setShowAllWords(true)}
-                  disabled={isTransitioning}
-                  className="rounded-full glass-card px-4 md:px-6"
-                >
-                  <List className="h-5 w-5 md:h-6 md:w-6" />
-                </Button>
-
-                {/* Next Button */}
-                <Button
-                  size="lg"
-                  onClick={handleNextWord}
-                  disabled={currentWordIndex === totalWords - 1 || isTransitioning}
-                  className="flex-1 rounded-full bg-gradient-primary"
-                >
-                  Next
-                  <ChevronRight className="h-5 w-5 md:h-6 md:w-6 ml-2" />
-                </Button>
-              </div>
-            ) : (
-              // Practice Mode: Skip / List
-              <div className="flex items-center justify-center gap-3">
-                {/* Skip Button */}
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => {
-                    if (feedback !== 'correct') {
-                      toast.info('Skipping to next word');
-                      handleNextWord();
-                    }
-                  }}
-                  disabled={feedback === 'correct' || isTransitioning}
-                  className="flex-1 rounded-full glass-card"
-                >
-                  <SkipForward className="h-5 w-5 md:h-6 md:w-6 mr-2" />
-                  Skip
-                </Button>
-
-                {/* Word List Button */}
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => setShowAllWords(true)}
-                  disabled={isTransitioning}
-                  className="rounded-full glass-card px-4 md:px-6"
-                >
-                  <List className="h-5 w-5 md:h-6 md:w-6" />
-                </Button>
-              </div>
-            )}
+              {/* Word List Button */}
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setShowAllWords(true)}
+                disabled={isTransitioning}
+                className="rounded-full glass-card px-4 md:px-6"
+              >
+                <List className="h-5 w-5 md:h-6 md:w-6" />
+              </Button>
+            </div>
           </div>
 
         </div>
