@@ -37,9 +37,10 @@ export class AdaptiveAudioPlayer {
 
     this.audio = audio;
 
-    if (trimLeadingSilence) {
-      await this.applyLeadingSilenceTrim(audio, url, maxTrimSeconds);
-    }
+    // Disabled trimLeadingSilence as it causes short TTS words to be truncated.
+    // if (trimLeadingSilence) {
+    //   await this.applyLeadingSilenceTrim(audio, url, maxTrimSeconds);
+    // }
 
     const handleEnded = () => {
       this.cleanupNodes();

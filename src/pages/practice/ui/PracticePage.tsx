@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dialog";
 
 type CharacterState = "idle" | "happy" | "encouraging";
-const WORD_AUDIO_OPTIONS = { trimLeadingSilence: true, maxTrimSeconds: 1.2 } as const;
+const WORD_AUDIO_OPTIONS = {} as const;
 
 // Fisher-Yates shuffle algorithm for random word order
 const shuffleArray = <T,>(array: T[]): T[] => {
