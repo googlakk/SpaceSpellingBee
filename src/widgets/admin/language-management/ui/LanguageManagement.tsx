@@ -132,7 +132,7 @@ export const LanguageManagement = () => {
   };
 
   const handleSaveVoiceSettings = async (
-    provider: 'openai' | 'elevenlabs',
+    provider: string,
     voiceId: string,
     voiceName: string,
     settings: any
@@ -266,9 +266,8 @@ export const LanguageManagement = () => {
               {languages.map((language) => (
                 <div
                   key={language.id}
-                  className={`flex items-center justify-between p-4 border rounded-lg ${
-                    language.is_active ? 'bg-white' : 'bg-gray-50'
-                  }`}
+                  className={`flex items-center justify-between p-4 border rounded-lg ${language.is_active ? 'bg-white' : 'bg-gray-50'
+                    }`}
                 >
                   <div className="flex items-center gap-4">
                     <div className="text-4xl">{language.flag_emoji}</div>

@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/shared/ui/button";
-import { Volume2, Volume1, VolumeX, Gauge, Play, Pause } from "lucide-react";
+import { Volume2, Volume1, VolumeX, Gauge, Pause } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { audioPlayer } from "../model/audioPlayer";
+import { adaptiveAudioPlayer } from "@/shared/lib/adaptiveAudioPlayer";
 
 interface AudioButtonProps {
   text: string;
@@ -25,31 +26,21 @@ export const AudioButton = ({
   const [volume, setVolume] = useState(1.0);
   const [playbackRate, setPlaybackRate] = useState(1.0);
   const [showControls, setShowControls] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const handlePlay = async () => {
+  const handlePlay = useCallback(async () => {
     try {
       setIsPlaying(true);
 
       // If we have a pre-recorded audio URL, use it
       if (audioUrl) {
-        if (audioRef.current) {
-          audioRef.current.pause();
-          audioRef.current.currentTime = 0;
-        }
-
-        const audio = new Audio(audioUrl);
-        audio.volume = volume;
-        audio.playbackRate = playbackRate;
-        audioRef.current = audio;
-
-        await audio.play();
-
-        audio.onended = () => {
-          setIsPlaying(false);
-          audioRef.current = null;
-          onPlayComplete?.();
-        };
+        await adaptiveAudioPlayer.play(audioUrl, {
+          volume,
+          playbackRate,
+          onEnded: () => {
+            setIsPlaying(false);
+            onPlayComplete?.();
+          },
+        });
       } else {
         // Fallback to TTS
         await audioPlayer.play(text, language);
@@ -59,33 +50,27 @@ export const AudioButton = ({
     } catch (error) {
       console.error("Audio playback error:", error);
       setIsPlaying(false);
-      audioRef.current = null;
     }
-  };
+  }, [audioUrl, volume, playbackRate, onPlayComplete, text, language]);
 
   const handleStop = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setIsPlaying(false);
-      audioRef.current = null;
+    adaptiveAudioPlayer.stop();
+    if (audioPlayer.isPlaying()) {
+      audioPlayer.stop();
     }
+    setIsPlaying(false);
   };
 
   const handleVolumeChange = (value: number[]) => {
     const newVolume = value[0];
     setVolume(newVolume);
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume;
-    }
+    adaptiveAudioPlayer.setVolume(newVolume);
   };
 
   const handlePlaybackRateChange = (value: number[]) => {
     const newRate = value[0];
     setPlaybackRate(newRate);
-    if (audioRef.current) {
-      audioRef.current.playbackRate = newRate;
-    }
+    adaptiveAudioPlayer.setPlaybackRate(newRate);
   };
 
   // Auto-play when word changes
@@ -97,14 +82,14 @@ export const AudioButton = ({
       }, 300);
       return () => clearTimeout(timer);
     }
-  }, [text, audioUrl, autoPlay]);
+  }, [autoPlay, disabled, handlePlay]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
+      adaptiveAudioPlayer.stop();
+      if (audioPlayer.isPlaying()) {
+        audioPlayer.stop();
       }
     };
   }, []);
@@ -215,10 +200,8 @@ export const AudioButton = ({
                 onClick={() => {
                   setVolume(1.0);
                   setPlaybackRate(1.0);
-                  if (audioRef.current) {
-                    audioRef.current.volume = 1.0;
-                    audioRef.current.playbackRate = 1.0;
-                  }
+                  adaptiveAudioPlayer.setVolume(1.0);
+                  adaptiveAudioPlayer.setPlaybackRate(1.0);
                 }}
                 className="flex-1 border-primary/30 hover:border-primary hover:bg-primary/10"
               >
@@ -229,9 +212,7 @@ export const AudioButton = ({
                 size="sm"
                 onClick={() => {
                   setPlaybackRate(0.75);
-                  if (audioRef.current) {
-                    audioRef.current.playbackRate = 0.75;
-                  }
+                  adaptiveAudioPlayer.setPlaybackRate(0.75);
                 }}
                 className="flex-1 border-accent/30 hover:border-accent hover:bg-accent/10"
               >

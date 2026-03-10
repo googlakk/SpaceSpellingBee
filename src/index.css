@@ -1,21 +1,13 @@
+/* CSS imports must precede all other statements */
+@import './styles/performance.css';
+@import './styles/minimal-hig.css';
+@import './styles/light-theme.css';
+@import './styles/gradient-grid.css';
+@import './styles/academic-night.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Performance Optimizations */
-@import './styles/performance.css';
-
-/* Apple HIG Minimal Design */
-@import './styles/minimal-hig.css';
-
-/* Light Theme */
-@import './styles/light-theme.css';
-
-/* Gradient Grid Background - 2025 */
-@import './styles/gradient-grid.css';
-
-/* Academic Night Design System */
-@import './styles/academic-night.css';
 
 /* Intellect Pro School - Modern 2025 Design System */
 
@@ -187,9 +179,6 @@
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
-
-  /* Import futuristic fonts */
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 }
 
 @layer utilities {

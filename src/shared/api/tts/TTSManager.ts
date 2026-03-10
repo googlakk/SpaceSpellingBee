@@ -1,8 +1,11 @@
 /**
  * TTS Manager - Central management for all TTS providers
  *
- * This singleton class manages multiple TTS providers (OpenAI, ElevenLabs, etc.)
+ * This singleton class manages multiple TTS providers (OpenAI, ElevenLabs, Kokoro)
  * and provides a unified interface for generating speech across different services.
+ *
+ * Providers are loaded lazily via dynamic import() on first access, keeping
+ * provider code out of the initial bundle.
  */
 
 import {
@@ -13,18 +16,23 @@ import {
   TTSSettings,
   TTSProviderError,
 } from './types';
-import { OpenAITTSProvider } from './providers/OpenAIProvider';
-import { ElevenLabsTTSProvider } from './providers/ElevenLabsProvider';
-import { KokoroTTSProvider } from './providers/KokoroProvider';
+
+// All known provider types — used for sync checks without loading modules
+const REGISTERED_PROVIDERS: readonly TTSProviderType[] = [
+  'openai',
+  'elevenlabs',
+  'kokoro',
+] as const;
 
 export class TTSManager {
   private static instance: TTSManager;
   private providers: Map<TTSProviderType, ITTSProvider>;
-  private defaultProvider: TTSProviderType = 'elevenlabs';
+  private loadingProviders: Map<TTSProviderType, Promise<ITTSProvider>>;
+  private defaultProvider: TTSProviderType = 'openai';
 
   private constructor() {
     this.providers = new Map();
-    this.initializeProviders();
+    this.loadingProviders = new Map();
   }
 
   /**
@@ -38,58 +46,104 @@ export class TTSManager {
   }
 
   /**
-   * Initialize all available TTS providers
+   * Lazily load and cache a provider module via dynamic import.
+   * Uses a loading promise cache to prevent duplicate concurrent loads.
    */
-  private initializeProviders(): void {
-    // Register OpenAI provider
-    this.providers.set('openai', new OpenAITTSProvider());
+  private async loadProvider(type: TTSProviderType): Promise<ITTSProvider> {
+    // Return cached provider if already loaded
+    const cached = this.providers.get(type);
+    if (cached) return cached;
 
-    // Register ElevenLabs provider
-    this.providers.set('elevenlabs', new ElevenLabsTTSProvider());
+    // Return in-flight promise if already loading
+    const loading = this.loadingProviders.get(type);
+    if (loading) return loading;
 
-    // Register Kokoro provider (local WebGPU-based)
-    this.providers.set('kokoro', new KokoroTTSProvider());
-  }
+    // Start loading
+    const promise = this.doLoadProvider(type);
+    this.loadingProviders.set(type, promise);
 
-  /**
-   * Get a specific provider by type
-   */
-  public getProvider(type: TTSProviderType): ITTSProvider {
-    const provider = this.providers.get(type);
-    if (!provider) {
-      throw new TTSProviderError(`Provider '${type}' not found`, type);
+    try {
+      const provider = await promise;
+      this.providers.set(type, provider);
+      return provider;
+    } finally {
+      this.loadingProviders.delete(type);
     }
-    return provider;
   }
 
   /**
-   * Get all registered providers
+   * Perform the actual dynamic import for a provider type.
    */
-  public getAllProviders(): ITTSProvider[] {
-    return Array.from(this.providers.values());
+  private async doLoadProvider(type: TTSProviderType): Promise<ITTSProvider> {
+    switch (type) {
+      case 'openai': {
+        const { OpenAITTSProvider } = await import('./providers/OpenAIProvider');
+        return new OpenAITTSProvider();
+      }
+      case 'elevenlabs': {
+        const { ElevenLabsTTSProvider } = await import('./providers/ElevenLabsProvider');
+        return new ElevenLabsTTSProvider();
+      }
+      case 'kokoro': {
+        const { KokoroTTSProvider } = await import('./providers/KokoroProvider');
+        return new KokoroTTSProvider();
+      }
+      default:
+        throw new TTSProviderError(`Unknown provider type: '${type}'`, type);
+    }
   }
 
   /**
-   * Get all configured (ready to use) providers
+   * Get a specific provider by type (lazy-loaded).
    */
-  public getConfiguredProviders(): ITTSProvider[] {
-    return this.getAllProviders().filter(provider => provider.isConfigured());
+  public async getProvider(type: TTSProviderType): Promise<ITTSProvider> {
+    return this.loadProvider(type);
+  }
+
+  /**
+   * Get all registered provider types.
+   * This is synchronous — no module loading required.
+   */
+  public getProviderTypes(): TTSProviderType[] {
+    return [...REGISTERED_PROVIDERS];
+  }
+
+  /**
+   * Check if a provider type is registered (known).
+   * This is synchronous — checks the static registry, not provider state.
+   */
+  public isProviderRegistered(type: TTSProviderType): boolean {
+    return REGISTERED_PROVIDERS.includes(type);
+  }
+
+  /**
+   * Check if a provider is configured and ready to use.
+   * Loads the provider lazily if needed.
+   */
+  public async isProviderConfigured(providerType: TTSProviderType): Promise<boolean> {
+    if (!this.isProviderRegistered(providerType)) return false;
+    try {
+      const provider = await this.loadProvider(providerType);
+      return provider.isConfigured();
+    } catch {
+      return false;
+    }
   }
 
   /**
    * Set the default provider
    */
   public setDefaultProvider(type: TTSProviderType): void {
-    if (!this.providers.has(type)) {
+    if (!this.isProviderRegistered(type)) {
       throw new TTSProviderError(`Provider '${type}' not found`, type);
     }
     this.defaultProvider = type;
   }
 
   /**
-   * Get the default provider
+   * Get the default provider (lazy-loaded)
    */
-  public getDefaultProvider(): ITTSProvider {
+  public async getDefaultProvider(): Promise<ITTSProvider> {
     return this.getProvider(this.defaultProvider);
   }
 
@@ -100,7 +154,7 @@ export class TTSManager {
     text: string,
     config: TTSProviderConfig
   ): Promise<Blob> {
-    const provider = this.getProvider(config.provider);
+    const provider = await this.getProvider(config.provider);
 
     if (!provider.isConfigured()) {
       throw new TTSProviderError(
@@ -116,7 +170,7 @@ export class TTSManager {
    * Generate speech using the default provider
    */
   public async generateSpeechWithDefaults(text: string): Promise<Blob> {
-    const provider = this.getDefaultProvider();
+    const provider = await this.getDefaultProvider();
     const voiceId = provider.getDefaultVoiceId();
     const settings = provider.getDefaultSettings();
 
@@ -129,7 +183,7 @@ export class TTSManager {
   public async getAvailableVoices(
     providerType: TTSProviderType
   ): Promise<TTSVoice[]> {
-    const provider = this.getProvider(providerType);
+    const provider = await this.getProvider(providerType);
 
     if (!provider.isConfigured()) {
       throw new TTSProviderError(
@@ -142,55 +196,11 @@ export class TTSManager {
   }
 
   /**
-   * Get default settings for a specific provider
+   * Get default settings for a specific provider (lazy-loaded)
    */
-  public getDefaultSettings(providerType: TTSProviderType): TTSSettings {
-    const provider = this.getProvider(providerType);
+  public async getDefaultSettings(providerType: TTSProviderType): Promise<TTSSettings> {
+    const provider = await this.getProvider(providerType);
     return provider.getDefaultSettings();
-  }
-
-  /**
-   * Check if a provider is configured and ready to use
-   */
-  public isProviderConfigured(providerType: TTSProviderType): boolean {
-    const provider = this.providers.get(providerType);
-    return provider ? provider.isConfigured() : false;
-  }
-
-  /**
-   * Get list of all provider types
-   */
-  public getProviderTypes(): TTSProviderType[] {
-    return Array.from(this.providers.keys());
-  }
-
-  /**
-   * Create a provider config with defaults
-   */
-  public createDefaultConfig(
-    providerType: TTSProviderType
-  ): TTSProviderConfig {
-    const provider = this.getProvider(providerType);
-    return {
-      provider: providerType,
-      voiceId: provider.getDefaultVoiceId(),
-      settings: provider.getDefaultSettings(),
-    };
-  }
-
-  /**
-   * Validate and normalize provider config
-   */
-  public normalizeConfig(config: Partial<TTSProviderConfig>): TTSProviderConfig {
-    const providerType = config.provider || this.defaultProvider;
-    const provider = this.getProvider(providerType);
-
-    return {
-      provider: providerType,
-      voiceId: config.voiceId || provider.getDefaultVoiceId(),
-      voiceName: config.voiceName,
-      settings: config.settings || provider.getDefaultSettings(),
-    };
   }
 }
 

@@ -6,6 +6,7 @@ import {
   TTSVoice,
   OpenAITTSSettings,
   ElevenLabsTTSSettings,
+  ElevenLabsModel,
   KokoroTTSSettings,
 } from '@/shared/api/tts';
 import {
@@ -51,13 +52,22 @@ export const VoiceSettingsDialog = ({
   const [selectedVoiceName, setSelectedVoiceName] = useState('');
 
   // OpenAI settings
-  const [openaiModel, setOpenaiModel] = useState<'tts-1' | 'tts-1-hd'>('tts-1-hd');
-  const [openaiSpeed, setOpenaiSpeed] = useState(0.85);
+  const [openaiModel, setOpenaiModel] = useState<'tts-1' | 'tts-1-hd' | 'gpt-4o-mini-audio-preview'>('tts-1-hd');
+  const [openaiSpeed, setOpenaiSpeed] = useState(1.0);
+  const [openaiInstruction, setOpenaiInstruction] = useState('');
 
   // ElevenLabs settings
+  const [elevenLabsModel, setElevenLabsModel] = useState<ElevenLabsModel>('eleven_v3');
   const [elevenLabsStability, setElevenLabsStability] = useState(0.5);
   const [elevenLabsSimilarity, setElevenLabsSimilarity] = useState(0.75);
   const [elevenLabsStyle, setElevenLabsStyle] = useState(0.0);
+
+  // Provider configuration status (loaded async)
+  const [providerConfigured, setProviderConfigured] = useState<Record<TTSProviderType, boolean>>({
+    openai: false,
+    elevenlabs: false,
+    kokoro: false,
+  });
   const [elevenLabsSpeakerBoost, setElevenLabsSpeakerBoost] = useState(true);
 
   // Kokoro settings
@@ -80,11 +90,13 @@ export const VoiceSettingsDialog = ({
       if (language.voice_settings) {
         if (currentProvider === 'openai') {
           setOpenaiModel(language.voice_settings.model || 'tts-1-hd');
-          setOpenaiSpeed(language.voice_settings.speed || 0.85);
+          setOpenaiSpeed(language.voice_settings.speed || 1.0);
+          setOpenaiInstruction(language.voice_settings.instruction || '');
         } else if (currentProvider === 'elevenlabs') {
-          setElevenLabsStability(language.voice_settings.stability || 0.5);
-          setElevenLabsSimilarity(language.voice_settings.similarity_boost || 0.75);
-          setElevenLabsStyle(language.voice_settings.style || 0.0);
+          setElevenLabsModel(language.voice_settings.model || 'eleven_v3');
+          setElevenLabsStability(language.voice_settings.stability ?? 0.5);
+          setElevenLabsSimilarity(language.voice_settings.similarity_boost ?? 0.75);
+          setElevenLabsStyle(language.voice_settings.style ?? 0.0);
           setElevenLabsSpeakerBoost(language.voice_settings.use_speaker_boost ?? true);
         } else if (currentProvider === 'kokoro') {
           setKokoroSpeed(language.voice_settings.speed || 1.0);
@@ -93,6 +105,17 @@ export const VoiceSettingsDialog = ({
 
       loadVoices(currentProvider, savedVoiceId);
     }
+
+    // Check provider configuration status
+    const checkProviders = async () => {
+      const [openai, elevenlabs, kokoro] = await Promise.all([
+        ttsManager.isProviderConfigured('openai'),
+        ttsManager.isProviderConfigured('elevenlabs'),
+        ttsManager.isProviderConfigured('kokoro'),
+      ]);
+      setProviderConfigured({ openai, elevenlabs, kokoro });
+    };
+    checkProviders();
   }, [open, language]);
 
   // Load voices when provider changes (user manually changes provider)
@@ -102,7 +125,8 @@ export const VoiceSettingsDialog = ({
   };
 
   const loadVoices = async (providerType: TTSProviderType, preserveVoiceId: string = '') => {
-    if (!ttsManager.isProviderConfigured(providerType)) {
+    const configured = await ttsManager.isProviderConfigured(providerType);
+    if (!configured) {
       const providerNames: Record<TTSProviderType, string> = {
         openai: 'OpenAI',
         elevenlabs: 'ElevenLabs',
@@ -120,7 +144,8 @@ export const VoiceSettingsDialog = ({
 
       // Only set default voice if no voice is preserved
       if (!preserveVoiceId && voiceList.length > 0) {
-        const defaultVoice = ttsManager.getProvider(providerType).getDefaultVoiceId();
+        const providerInstance = await ttsManager.getProvider(providerType);
+        const defaultVoice = providerInstance.getDefaultVoiceId();
         const voice = voiceList.find(v => v.voice_id === defaultVoice) || voiceList[0];
         setSelectedVoiceId(voice.voice_id);
         setSelectedVoiceName(voice.name);
@@ -134,23 +159,25 @@ export const VoiceSettingsDialog = ({
     }
   };
 
-  const handleProviderChange = (newProvider: TTSProviderType) => {
+  const handleProviderChange = async (newProvider: TTSProviderType) => {
     setProvider(newProvider);
     setSelectedVoiceId('');
     setSelectedVoiceName('');
 
     // Load default settings for new provider
-    const defaultSettings = ttsManager.getDefaultSettings(newProvider);
+    const defaultSettings = await ttsManager.getDefaultSettings(newProvider);
     if (newProvider === 'openai') {
       const openaiSettings = defaultSettings as OpenAITTSSettings;
       setOpenaiModel(openaiSettings.model);
       setOpenaiSpeed(openaiSettings.speed);
+      setOpenaiInstruction(openaiSettings.instruction || '');
     } else if (newProvider === 'elevenlabs') {
       const elevenLabsSettings = defaultSettings as ElevenLabsTTSSettings;
+      setElevenLabsModel(elevenLabsSettings.model || 'eleven_v3');
       setElevenLabsStability(elevenLabsSettings.stability);
       setElevenLabsSimilarity(elevenLabsSettings.similarity_boost);
-      setElevenLabsStyle(elevenLabsSettings.style);
-      setElevenLabsSpeakerBoost(elevenLabsSettings.use_speaker_boost);
+      setElevenLabsStyle(elevenLabsSettings.style ?? 0.0);
+      setElevenLabsSpeakerBoost(elevenLabsSettings.use_speaker_boost ?? true);
     } else if (newProvider === 'kokoro') {
       const kokoroSettings = defaultSettings as KokoroTTSSettings;
       setKokoroSpeed(kokoroSettings.speed);
@@ -179,13 +206,17 @@ export const VoiceSettingsDialog = ({
         settings = {
           model: openaiModel,
           speed: openaiSpeed,
+          ...(openaiInstruction ? { instruction: openaiInstruction } : {}),
         };
       } else if (provider === 'elevenlabs') {
         settings = {
+          model: elevenLabsModel,
           stability: elevenLabsStability,
           similarity_boost: elevenLabsSimilarity,
-          style: elevenLabsStyle,
-          use_speaker_boost: elevenLabsSpeakerBoost,
+          ...(elevenLabsModel === 'eleven_multilingual_v2' ? {
+            style: elevenLabsStyle,
+            use_speaker_boost: elevenLabsSpeakerBoost,
+          } : {}),
         };
       } else if (provider === 'kokoro') {
         settings = {
@@ -206,9 +237,9 @@ export const VoiceSettingsDialog = ({
 
   if (!language) return null;
 
-  const isOpenAIConfigured = ttsManager.isProviderConfigured('openai');
-  const isElevenLabsConfigured = ttsManager.isProviderConfigured('elevenlabs');
-  const isKokoroConfigured = ttsManager.isProviderConfigured('kokoro');
+  const isOpenAIConfigured = providerConfigured.openai;
+  const isElevenLabsConfigured = providerConfigured.elevenlabs;
+  const isKokoroConfigured = providerConfigured.kokoro;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -329,16 +360,16 @@ export const VoiceSettingsDialog = ({
                   <Label>Quality Model</Label>
                   <Select
                     value={openaiModel}
-                    onValueChange={(value: 'tts-1' | 'tts-1-hd') => setOpenaiModel(value)}
+                    onValueChange={(value: 'tts-1' | 'tts-1-hd' | 'gpt-4o-mini-audio-preview') => setOpenaiModel(value)}
                   >
                     <SelectTrigger className="mt-2">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="tts-1">
+                      <SelectItem value="gpt-4o-mini-audio-preview">
                         <div className="flex flex-col">
-                          <span className="font-medium">tts-1</span>
-                          <span className="text-xs text-muted-foreground">Standard quality (faster, lower cost)</span>
+                          <span className="font-medium">gpt-4o-mini-audio-preview</span>
+                          <span className="text-xs text-muted-foreground">Advanced audio model with precise system instructions</span>
                         </div>
                       </SelectItem>
                       <SelectItem value="tts-1-hd">
@@ -347,9 +378,31 @@ export const VoiceSettingsDialog = ({
                           <span className="text-xs text-muted-foreground">High quality (recommended for education)</span>
                         </div>
                       </SelectItem>
+                      <SelectItem value="tts-1">
+                        <div className="flex flex-col">
+                          <span className="font-medium">tts-1</span>
+                          <span className="text-xs text-muted-foreground">Standard quality (faster, lower cost)</span>
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* OpenAI Instructions (Only for GPT-4o audio) */}
+                {openaiModel === 'gpt-4o-mini-audio-preview' && (
+                  <div>
+                    <Label>Instructions (Prompt)</Label>
+                    <textarea
+                      className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-2"
+                      placeholder="E.g. Act as a professional Spelling Bee announcer for a children's competition..."
+                      value={openaiInstruction}
+                      onChange={(e) => setOpenaiInstruction(e.target.value)}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      System instructions to guide pronunciation and tone.
+                    </p>
+                  </div>
+                )}
 
                 {/* OpenAI Speed */}
                 <div>
@@ -373,6 +426,33 @@ export const VoiceSettingsDialog = ({
 
             {provider === 'elevenlabs' && (
               <>
+                {/* ElevenLabs Model Selection */}
+                <div>
+                  <Label>ElevenLabs Model</Label>
+                  <Select
+                    value={elevenLabsModel}
+                    onValueChange={(value: ElevenLabsModel) => setElevenLabsModel(value)}
+                  >
+                    <SelectTrigger className="mt-2">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="eleven_v3">
+                        <div className="flex flex-col">
+                          <span className="font-medium">Eleven v3</span>
+                          <span className="text-xs text-muted-foreground">Latest model, best quality and speed</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="eleven_multilingual_v2">
+                        <div className="flex flex-col">
+                          <span className="font-medium">Multilingual v2</span>
+                          <span className="text-xs text-muted-foreground">Classic model with style & speaker boost controls</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 {/* ElevenLabs Stability */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -409,37 +489,42 @@ export const VoiceSettingsDialog = ({
                   </p>
                 </div>
 
-                {/* ElevenLabs Style */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label>Style Exaggeration</Label>
-                    <span className="text-sm text-muted-foreground">{elevenLabsStyle.toFixed(2)}</span>
-                  </div>
-                  <Slider
-                    value={[elevenLabsStyle]}
-                    onValueChange={(v) => setElevenLabsStyle(v[0])}
-                    min={0}
-                    max={1}
-                    step={0.05}
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Higher values exaggerate the style of the voice. Use 0.0 for neutral speech.
-                  </p>
-                </div>
+                {/* v2-only settings: Style & Speaker Boost */}
+                {elevenLabsModel === 'eleven_multilingual_v2' && (
+                  <>
+                    {/* ElevenLabs Style */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <Label>Style Exaggeration</Label>
+                        <span className="text-sm text-muted-foreground">{(elevenLabsStyle ?? 0).toFixed(2)}</span>
+                      </div>
+                      <Slider
+                        value={[elevenLabsStyle ?? 0]}
+                        onValueChange={(v) => setElevenLabsStyle(v[0])}
+                        min={0}
+                        max={1}
+                        step={0.05}
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Higher values exaggerate the style of the voice. Use 0.0 for neutral speech.
+                      </p>
+                    </div>
 
-                {/* ElevenLabs Speaker Boost */}
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Speaker Boost</Label>
-                    <p className="text-xs text-muted-foreground">
-                      Enhances voice clarity and quality
-                    </p>
-                  </div>
-                  <Switch
-                    checked={elevenLabsSpeakerBoost}
-                    onCheckedChange={setElevenLabsSpeakerBoost}
-                  />
-                </div>
+                    {/* ElevenLabs Speaker Boost */}
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label>Speaker Boost</Label>
+                        <p className="text-xs text-muted-foreground">
+                          Enhances voice clarity and quality
+                        </p>
+                      </div>
+                      <Switch
+                        checked={elevenLabsSpeakerBoost}
+                        onCheckedChange={setElevenLabsSpeakerBoost}
+                      />
+                    </div>
+                  </>
+                )}
               </>
             )}
 

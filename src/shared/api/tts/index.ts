@@ -13,6 +13,7 @@ export type {
   TTSSettings,
   OpenAITTSSettings,
   ElevenLabsTTSSettings,
+  ElevenLabsModel,
   KokoroTTSSettings,
   TTSProviderConfig,
 } from './types';
@@ -23,10 +24,9 @@ export {
   TTSProviderNotConfiguredError,
 } from './types';
 
-// Export providers
-export { OpenAITTSProvider } from './providers/OpenAIProvider';
-export { ElevenLabsTTSProvider } from './providers/ElevenLabsProvider';
-export { KokoroTTSProvider } from './providers/KokoroProvider';
+// Note: Provider classes are NOT exported here intentionally.
+// TTSManager loads providers lazily via dynamic import() to keep
+// them out of the initial bundle. Access providers through ttsManager.
 
 // Export manager and convenience functions
 export {

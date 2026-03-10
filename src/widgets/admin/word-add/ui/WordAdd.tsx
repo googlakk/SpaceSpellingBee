@@ -7,8 +7,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Loader2, Trash2, Search } from 'lucide-react';
+import { Plus, Loader2, Trash2, Search, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
+
+const getAudioFileMeta = (blob: Blob) => {
+  const mimeType = blob.type || 'audio/mpeg';
+  if (mimeType.includes('wav')) {
+    return { extension: 'wav', contentType: 'audio/wav' };
+  }
+  if (mimeType.includes('ogg')) {
+    return { extension: 'ogg', contentType: 'audio/ogg' };
+  }
+  return { extension: 'mp3', contentType: 'audio/mpeg' };
+};
 
 export const WordAdd = () => {
   const [languages, setLanguages] = useState<Language[]>([]);
@@ -23,6 +34,9 @@ export const WordAdd = () => {
   const [wordText, setWordText] = useState('');
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRegenerating, setIsRegenerating] = useState<string | null>(null);
+  const [isRegeneratingAll, setIsRegeneratingAll] = useState(false);
+  const [regenerationProgress, setRegenerationProgress] = useState({ current: 0, total: 0 });
 
   // Word list state
   const [words, setWords] = useState<any[]>([]);
@@ -196,7 +210,7 @@ export const WordAdd = () => {
 
           // Use default settings if none available
           if (!voiceSettings) {
-            voiceSettings = ttsManager.getDefaultSettings(provider);
+            voiceSettings = await ttsManager.getDefaultSettings(provider);
           }
 
           console.log('🎙️ Generating audio with Provider:', provider);
@@ -206,16 +220,17 @@ export const WordAdd = () => {
           const ttsConfig: TTSProviderConfig = {
             provider,
             voiceId,
-            settings: voiceSettings,
+            settings: voiceSettings as any,
           };
 
           const audioBlob = await ttsManager.generateSpeech(wordText, ttsConfig);
-          const fileName = `${selectedSublevel}/${wordText.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.mp3`;
+          const { extension, contentType } = getAudioFileMeta(audioBlob);
+          const fileName = `${selectedSublevel}/${wordText.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.${extension}`;
 
           const { error: uploadError } = await supabase.storage
             .from('word-audio')
             .upload(fileName, audioBlob, {
-              contentType: 'audio/mpeg',
+              contentType,
               upsert: false,
             });
 
@@ -223,7 +238,7 @@ export const WordAdd = () => {
             console.error('Upload error:', uploadError);
             throw uploadError;
           }
-          
+
           const { data: urlData } = supabase.storage
             .from('word-audio')
             .getPublicUrl(fileName);
@@ -235,12 +250,13 @@ export const WordAdd = () => {
         }
       } else if (audioFile) {
         // Upload provided audio
-        const fileName = `${selectedSublevel}/${wordText.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.mp3`;
+        const { extension, contentType } = getAudioFileMeta(audioFile);
+        const fileName = `${selectedSublevel}/${wordText.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.${extension}`;
 
         const { error: uploadError } = await supabase.storage
           .from('word-audio')
           .upload(fileName, audioFile, {
-            contentType: 'audio/mpeg',
+            contentType,
             upsert: false,
           });
 
@@ -276,6 +292,169 @@ export const WordAdd = () => {
       toast.error('Failed to add word');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleRegenerateAudio = async (wordId: string, wordText: string) => {
+    if (!supportsAutoAudio || !selectedLanguageData?.voice_id) {
+      toast.error('Auto-generation is not supported for this language or missing voice settings.');
+      return;
+    }
+
+    setIsRegenerating(wordId);
+    try {
+      // Get TTS provider and voice settings
+      const provider: TTSProviderType = (selectedLanguageData.tts_provider as TTSProviderType) || 'elevenlabs';
+      let voiceId = selectedLanguageData.voice_id;
+      let voiceSettings = selectedLanguageData.voice_settings;
+
+      if (!voiceSettings) {
+        try {
+          const { data: configData } = await supabase.from('app_config').select('default_voice_settings').single();
+          if (configData?.default_voice_settings) {
+            voiceSettings = configData.default_voice_settings;
+          }
+        } catch (error) {
+          console.warn('Could not load config voice settings:', error);
+        }
+      }
+
+      if (!voiceSettings) {
+        voiceSettings = await ttsManager.getDefaultSettings(provider);
+      }
+
+      const ttsConfig: TTSProviderConfig = {
+        provider,
+        voiceId,
+        settings: voiceSettings as any,
+      };
+
+      const audioBlob = await ttsManager.generateSpeech(wordText, ttsConfig);
+      const { extension, contentType } = getAudioFileMeta(audioBlob);
+      const fileName = `${selectedSublevel}/${wordText.replace(/[^a-zA-Z0-9]/g, '_')}_regenerated_${Date.now()}.${extension}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('word-audio')
+        .upload(fileName, audioBlob, { contentType, upsert: false });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage.from('word-audio').getPublicUrl(fileName);
+      const audioUrl = urlData.publicUrl;
+
+      const { error: updateError } = await supabase
+        .from('words')
+        .update({ audio_url: audioUrl, audio_generated: true })
+        .eq('id', wordId);
+
+      if (updateError) throw updateError;
+
+      toast.success(`Audio for "${wordText}" regenerated successfully!`);
+      loadWords();
+    } catch (error) {
+      console.error('Error regenerating audio:', error);
+      toast.error('Failed to regenerate audio');
+    } finally {
+      setIsRegenerating(null);
+    }
+  };
+
+  const handleRegenerateAll = async () => {
+    if (!words || words.length === 0) {
+      toast.warning('No words to regenerate.');
+      return;
+    }
+
+    if (!supportsAutoAudio || !selectedLanguageData?.voice_id) {
+      toast.error('Auto-generation is not supported for this language or missing voice settings.');
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to regenerate audio for ALL ${words.length} words in this sublevel? This might take a while.`)) {
+      return;
+    }
+
+    setIsRegeneratingAll(true);
+    setRegenerationProgress({ current: 0, total: words.length });
+
+    let successCount = 0;
+    let failCount = 0;
+
+    try {
+      // Get TTS provider and voice settings
+      const provider: TTSProviderType = (selectedLanguageData.tts_provider as TTSProviderType) || 'elevenlabs';
+      let voiceId = selectedLanguageData.voice_id;
+      let voiceSettings = selectedLanguageData.voice_settings;
+
+      if (!voiceSettings) {
+        try {
+          const { data: configData } = await supabase.from('app_config').select('default_voice_settings').single();
+          if (configData?.default_voice_settings) {
+            voiceSettings = configData.default_voice_settings;
+          }
+        } catch (error) {
+          console.warn('Could not load config voice settings:', error);
+        }
+      }
+
+      if (!voiceSettings) {
+        voiceSettings = await ttsManager.getDefaultSettings(provider);
+      }
+
+      const ttsConfig: TTSProviderConfig = {
+        provider,
+        voiceId,
+        settings: voiceSettings as any,
+      };
+
+      // Process sequentially to avoid API rate limits
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        setRegenerationProgress({ current: i + 1, total: words.length });
+
+        try {
+          const audioBlob = await ttsManager.generateSpeech(word.word, ttsConfig);
+          const { extension, contentType } = getAudioFileMeta(audioBlob);
+          const fileName = `${selectedSublevel}/${word.word.replace(/[^a-zA-Z0-9]/g, '_')}_regenerated_${Date.now()}.${extension}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('word-audio')
+            .upload(fileName, audioBlob, { contentType, upsert: false });
+
+          if (uploadError) throw uploadError;
+
+          const { data: urlData } = supabase.storage.from('word-audio').getPublicUrl(fileName);
+          const audioUrl = urlData.publicUrl;
+
+          const { error: updateError } = await supabase
+            .from('words')
+            .update({ audio_url: audioUrl, audio_generated: true })
+            .eq('id', word.id);
+
+          if (updateError) throw updateError;
+          successCount++;
+
+          // Small delay between requests to be extra safe with rate limits
+          await new Promise(resolve => setTimeout(resolve, 300));
+        } catch (err) {
+          console.error(`Failed to regenerate audio for word "${word.word}":`, err);
+          failCount++;
+        }
+      }
+
+      if (failCount === 0) {
+        toast.success(`Successfully regenerated audio for all ${successCount} words!`);
+      } else {
+        toast.warning(`Finished regenerating. ${successCount} succeeded, ${failCount} failed. Check console for details.`);
+      }
+
+      loadWords();
+    } catch (error) {
+      console.error('Error during batch regeneration:', error);
+      toast.error('An unexpected error occurred during batch regeneration.');
+    } finally {
+      setIsRegeneratingAll(false);
+      setRegenerationProgress({ current: 0, total: 0 });
     }
   };
 
@@ -444,8 +623,31 @@ export const WordAdd = () => {
       {/* Word List */}
       {selectedSublevel && (
         <Card>
-          <CardHeader>
-            <CardTitle>Words in this Sublevel ({words.length})</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <div>
+              <CardTitle>Words in this Sublevel ({words.length})</CardTitle>
+            </div>
+            {supportsAutoAudio && words.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRegenerateAll}
+                disabled={isRegeneratingAll || !!isRegenerating}
+                className="flex items-center gap-2"
+              >
+                {isRegeneratingAll ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+                    Regenerating ({regenerationProgress.current}/{regenerationProgress.total})...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="h-4 w-4 text-blue-500" />
+                    Regenerate All
+                  </>
+                )}
+              </Button>
+            )}
           </CardHeader>
           <CardContent>
             {loadingWords ? (
@@ -518,6 +720,19 @@ export const WordAdd = () => {
                               </audio>
                             )}
 
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRegenerateAudio(word.id, word.word)}
+                              disabled={isRegenerating === word.id || !supportsAutoAudio}
+                              title="Regenerate Audio"
+                            >
+                              {isRegenerating === word.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+                              ) : (
+                                <RefreshCw className="h-4 w-4 text-blue-500" />
+                              )}
+                            </Button>
                             <Button
                               variant="ghost"
                               size="sm"

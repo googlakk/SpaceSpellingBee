@@ -18,27 +18,24 @@ export interface TTSVoice {
 
 // Provider-specific settings types
 export interface OpenAITTSSettings {
-  model: 'tts-1' | 'tts-1-hd';
+  model: 'tts-1' | 'tts-1-hd' | 'gpt-4o-mini-audio-preview';
   speed: number; // 0.25 to 4.0
+  instruction?: string; // For gpt-4o-audio models
 }
 
-// Настройки для Eleven Multilingual v2
-export interface ElevenLabsV2TTSSettings {
+// ElevenLabs model type
+export type ElevenLabsModel = 'eleven_multilingual_v2' | 'eleven_turbo_v2_5' | 'eleven_v3';
+
+// Unified ElevenLabs settings
+// style and use_speaker_boost are only used with eleven_multilingual_v2
+export interface ElevenLabsTTSSettings {
+  model?: ElevenLabsModel;
   stability: number;
   similarity_boost: number;
-  style: number;
-  use_speaker_boost: boolean;
+  style?: number; // v2 only
+  use_speaker_boost?: boolean; // v2 only
+  speed?: number; // v2.5 / v3
 }
-
-// Настройки для Eleven v3 (alpha) - более простая структура
-export interface ElevenLabsV3TTSSettings {
-  stability: number; // Creative/Natural/Robust режим
-  similarity_boost: number; // Clarity + Similarity Enhancement
-  // Примечание: v3 НЕ поддерживает use_speaker_boost и style
-}
-
-// Union type для всех версий ElevenLabs
-export type ElevenLabsTTSSettings = ElevenLabsV2TTSSettings | ElevenLabsV3TTSSettings;
 
 // Union type for all provider settings
 export type TTSSettings = OpenAITTSSettings | ElevenLabsTTSSettings | KokoroTTSSettings;

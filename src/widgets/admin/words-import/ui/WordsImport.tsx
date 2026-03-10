@@ -13,6 +13,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { useEffect } from 'react';
 
+const getAudioFileMeta = (blob: Blob) => {
+  const mimeType = blob.type || 'audio/mpeg';
+  if (mimeType.includes('wav')) {
+    return { extension: 'wav', contentType: 'audio/wav' };
+  }
+  if (mimeType.includes('ogg')) {
+    return { extension: 'ogg', contentType: 'audio/ogg' };
+  }
+  return { extension: 'mp3', contentType: 'audio/mpeg' };
+};
+
 export const WordsImport = () => {
   const [languages, setLanguages] = useState<Language[]>([]);
   const [levels, setLevels] = useState<Level[]>([]);
@@ -214,7 +225,7 @@ export const WordsImport = () => {
 
             // Use default settings if none available
             if (!voiceSettings) {
-              voiceSettings = ttsManager.getDefaultSettings(provider);
+              voiceSettings = await ttsManager.getDefaultSettings(provider);
             }
 
             console.log(`🎙️ Generating audio for new word: "${word}" using ${provider}`);
@@ -226,12 +237,12 @@ export const WordsImport = () => {
             };
 
             const audioBlob = await ttsManager.generateSpeech(word, ttsConfig);
-
-            const fileName = `${selectedSublevel}/${word.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.mp3`;
+            const { extension, contentType } = getAudioFileMeta(audioBlob);
+            const fileName = `${selectedSublevel}/${word.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.${extension}`;
             const { error: uploadError } = await supabase.storage
               .from('word-audio')
               .upload(fileName, audioBlob, {
-                contentType: 'audio/mpeg',
+                contentType,
                 upsert: false,
               });
 

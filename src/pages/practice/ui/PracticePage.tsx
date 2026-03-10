@@ -12,6 +12,7 @@ import { calculateProgress } from "@/features/track-progress/model/progressTrack
 import { supabase, Word } from "@/shared/api/supabase";
 import { ROUTES } from "@/shared/config/routes";
 import { toast } from "sonner";
+import { adaptiveAudioPlayer } from "@/shared/lib/adaptiveAudioPlayer";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/dialog";
 
 type CharacterState = "idle" | "happy" | "encouraging";
+const WORD_AUDIO_OPTIONS = { trimLeadingSilence: true, maxTrimSeconds: 1.2 } as const;
 
 // Fisher-Yates shuffle algorithm for random word order
 const shuffleArray = <T,>(array: T[]): T[] => {
@@ -122,6 +124,7 @@ export const PracticePage = () => {
 
   // Determine if this is Olympic Mode
   const isOlympicMode = mode === 'olympic';
+  const wordTransitionMs = isOlympicMode ? 1500 : 300;
 
   // Load words on mount
   useEffect(() => {
@@ -135,8 +138,7 @@ export const PracticePage = () => {
   }, []);
 
   const handlePlayAudio = useCallback((audioUrl: string, word: string) => {
-    const audio = new Audio(audioUrl);
-    audio.play().catch(err => {
+    adaptiveAudioPlayer.play(audioUrl, WORD_AUDIO_OPTIONS).catch(err => {
       console.error('Audio playback failed:', err);
       toast.error('Audio playback failed');
     });
@@ -161,7 +163,7 @@ export const PracticePage = () => {
       setTimeout(() => {
         setCurrentWordIndex(prev => prev - 1);
         setIsTransitioning(false);
-      }, 300);
+      }, wordTransitionMs);
     }
   };
 
@@ -209,7 +211,7 @@ export const PracticePage = () => {
         setAttempts(0);
         setCharacterState('idle');
         setIsTransitioning(false);
-      }, 300);
+      }, wordTransitionMs);
     } else {
       // Reached end
       setShowCompletionModal(true);
@@ -267,17 +269,18 @@ export const PracticePage = () => {
   // Auto-play audio when word loads or changes
   useEffect(() => {
     if (!loading && currentWord) {
-      const timer = setTimeout(() => {
-        const audioUrl = currentWord.audio_url || `https://api.voicerss.org/?key=YOUR_API_KEY&hl=en-us&src=${encodeURIComponent(currentWord.word)}`;
-        const audio = new Audio(audioUrl);
-        audio.play().catch(err => {
-          console.error('Auto-play failed:', err);
-        });
-      }, 500); // Delay to ensure smooth transition
-
-      return () => clearTimeout(timer);
+      const audioUrl = currentWord.audio_url || `https://api.voicerss.org/?key=YOUR_API_KEY&hl=en-us&src=${encodeURIComponent(currentWord.word)}`;
+      adaptiveAudioPlayer.play(audioUrl, WORD_AUDIO_OPTIONS).catch(err => {
+        console.error('Auto-play failed:', err);
+      });
     }
   }, [currentWordIndex, loading, currentWord]);
+
+  useEffect(() => {
+    return () => {
+      adaptiveAudioPlayer.stop();
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -361,8 +364,10 @@ export const PracticePage = () => {
               variant="outline"
               size="lg"
               onClick={() => {
-                const audio = new Audio(currentWord.audio_url || `https://api.voicerss.org/?key=YOUR_API_KEY&hl=en-us&src=${encodeURIComponent(currentWord.word)}`);
-                audio.play().catch(err => {
+                adaptiveAudioPlayer.play(
+                  currentWord.audio_url || `https://api.voicerss.org/?key=YOUR_API_KEY&hl=en-us&src=${encodeURIComponent(currentWord.word)}`,
+                  WORD_AUDIO_OPTIONS
+                ).catch(err => {
                   console.error('Audio playback failed:', err);
                   toast.error('Audio playback failed');
                 });
@@ -564,8 +569,10 @@ export const PracticePage = () => {
               variant="outline"
               size="sm"
               onClick={() => {
-                const audio = new Audio(currentWord.audio_url || `https://api.voicerss.org/?key=YOUR_API_KEY&hl=en-us&src=${encodeURIComponent(currentWord.word)}`);
-                audio.play().catch(err => {
+                adaptiveAudioPlayer.play(
+                  currentWord.audio_url || `https://api.voicerss.org/?key=YOUR_API_KEY&hl=en-us&src=${encodeURIComponent(currentWord.word)}`,
+                  WORD_AUDIO_OPTIONS
+                ).catch(err => {
                   console.error('Audio playback failed:', err);
                   toast.error('Audio playback failed');
                 });

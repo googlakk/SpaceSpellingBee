@@ -11,6 +11,7 @@ import {
   TTSVoice,
   TTSSettings,
   ElevenLabsTTSSettings,
+  ElevenLabsModel,
   TTSProviderError,
   TTSProviderNotConfiguredError,
 } from '../types';
@@ -18,10 +19,13 @@ import {
 const ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY;
 const ELEVENLABS_API_URL = 'https://api.elevenlabs.io/v1';
 
-// Default settings для Eleven v3 (alpha)
+// Default settings для ElevenLabs
 const DEFAULT_SETTINGS: ElevenLabsTTSSettings = {
+  model: 'eleven_v3',
   stability: 0.5, // Natural режим (сбалансированный)
   similarity_boost: 0.75, // Высокая четкость для образовательного контента
+  style: 0.0, // Neutral (used only for v2)
+  use_speaker_boost: true, // (used only for v2)
 };
 
 // Default voice ID
@@ -58,19 +62,63 @@ export class ElevenLabsTTSProvider implements ITTSProvider {
     }
 
     const elevenLabsSettings = settings as ElevenLabsTTSSettings;
+    const modelId: ElevenLabsModel = elevenLabsSettings.model || 'eleven_v3';
+
+    // For short texts (single words), prevent ElevenLabs from hallucinating extra content
+    // and slow down pronunciation for clarity
+    const wordCount = text.trim().split(/\s+/).length;
+    const isSingleWord = wordCount <= 2;
+    const trimmedWord = text.trim();
+
+    // Use turbo v2.5 by default for single words as it hallucinates less, unless it's explicitly v3
+    let resolvedModelId = modelId;
+    if (isSingleWord && modelId !== 'eleven_v3') {
+      resolvedModelId = 'eleven_turbo_v2_5';
+    }
+    const isV2 = resolvedModelId === 'eleven_multilingual_v2' || resolvedModelId === 'eleven_turbo_v2_5';
+
+    // Add punctuation and pause to signal the end of the phrase
+    const preparedText = isSingleWord
+      ? `"${trimmedWord}".`
+      : text;
 
     try {
-      const requestBody = {
-        text,
-        model_id: 'eleven_v3', // Используем Eleven v3 (alpha)
-        voice_settings: {
-          stability: elevenLabsSettings.stability,
-          similarity_boost: elevenLabsSettings.similarity_boost,
-          // v3 НЕ поддерживает style и use_speaker_boost
-        },
-        language_code: 'en', // Английский язык (ISO 639-1)
-        // НЕ используем apply_text_normalization для v3
+      const voiceSettings: Record<string, any> = {
+        // High stability (0.8-1.0) makes voice more monotonous and strict to the text
+        stability: isSingleWord ? 0.85 : elevenLabsSettings.stability,
+        // Keep similarity around 0.75, higher values add noise for short words
+        similarity_boost: isSingleWord ? 0.75 : elevenLabsSettings.similarity_boost,
       };
+
+      if (isV2) {
+        // Zero style exaggeration for neutral, clean pronunciation without extra artifacts
+        voiceSettings.style = isSingleWord ? 0.0 : (elevenLabsSettings.style ?? 0.0);
+        voiceSettings.use_speaker_boost = elevenLabsSettings.use_speaker_boost ?? true;
+        // Adjust speed if available (speed is sometimes supported in v2/turbo)
+        if (isSingleWord) {
+          voiceSettings.speed = 0.85;
+        }
+      }
+
+      const requestBody: Record<string, any> = {
+        text: preparedText,
+        model_id: resolvedModelId,
+        voice_settings: voiceSettings,
+        // Disable text normalization — prevents the model from expanding/interpreting the text
+        apply_text_normalization: isSingleWord ? 'off' : 'auto',
+      };
+
+      if (isV2 && isSingleWord) {
+        // previous_text / next_text give v2 context about what comes before/after
+        // Empty strings signal this is an isolated utterance — no surrounding context
+        requestBody.previous_text = ' ';
+        requestBody.next_text = ' ';
+      }
+
+      // language_code only for v3
+      if (!isV2) {
+        requestBody.language_code = 'en';
+      }
 
       console.log('📤 Request body:', JSON.stringify(requestBody, null, 2));
 
