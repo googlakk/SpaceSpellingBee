@@ -24,6 +24,12 @@ import { Loader2, Volume2, Zap, Cpu } from 'lucide-react';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
 
+const OPENAI_BROADCAST_DEFAULTS: OpenAITTSSettings = {
+  model: 'gpt-4o-mini-tts',
+  speed: 0.92,
+  instruction: 'Speak like a professional male announcer with a low, warm, confident tone. Keep the diction crisp, clean, and precise. Sound natural, lively, and studio-quality. Pronounce only the provided word, with no added words or spelling.',
+};
+
 interface VoiceSettingsDialogProps {
   language: Language | null;
   open: boolean;
@@ -52,9 +58,9 @@ export const VoiceSettingsDialog = ({
   const [selectedVoiceName, setSelectedVoiceName] = useState('');
 
   // OpenAI settings
-  const [openaiModel, setOpenaiModel] = useState<'tts-1' | 'tts-1-hd' | 'gpt-4o-mini-audio-preview'>('tts-1-hd');
-  const [openaiSpeed, setOpenaiSpeed] = useState(1.0);
-  const [openaiInstruction, setOpenaiInstruction] = useState('');
+  const [openaiModel, setOpenaiModel] = useState<'tts-1' | 'tts-1-hd' | 'gpt-4o-mini-tts'>(OPENAI_BROADCAST_DEFAULTS.model);
+  const [openaiSpeed, setOpenaiSpeed] = useState(OPENAI_BROADCAST_DEFAULTS.speed);
+  const [openaiInstruction, setOpenaiInstruction] = useState(OPENAI_BROADCAST_DEFAULTS.instruction || '');
 
   // ElevenLabs settings
   const [elevenLabsModel, setElevenLabsModel] = useState<ElevenLabsModel>('eleven_v3');
@@ -89,9 +95,13 @@ export const VoiceSettingsDialog = ({
       // Load settings based on provider
       if (language.voice_settings) {
         if (currentProvider === 'openai') {
-          setOpenaiModel(language.voice_settings.model || 'tts-1-hd');
-          setOpenaiSpeed(language.voice_settings.speed || 1.0);
-          setOpenaiInstruction(language.voice_settings.instruction || '');
+          const normalizedOpenAIModel =
+            language.voice_settings.model === 'gpt-4o-mini-audio-preview'
+              ? 'gpt-4o-mini-tts'
+              : language.voice_settings.model ?? OPENAI_BROADCAST_DEFAULTS.model;
+          setOpenaiModel(normalizedOpenAIModel);
+          setOpenaiSpeed(language.voice_settings.speed ?? OPENAI_BROADCAST_DEFAULTS.speed);
+          setOpenaiInstruction(language.voice_settings.instruction || OPENAI_BROADCAST_DEFAULTS.instruction || '');
         } else if (currentProvider === 'elevenlabs') {
           setElevenLabsModel(language.voice_settings.model || 'eleven_v3');
           setElevenLabsStability(language.voice_settings.stability ?? 0.5);
@@ -99,7 +109,7 @@ export const VoiceSettingsDialog = ({
           setElevenLabsStyle(language.voice_settings.style ?? 0.0);
           setElevenLabsSpeakerBoost(language.voice_settings.use_speaker_boost ?? true);
         } else if (currentProvider === 'kokoro') {
-          setKokoroSpeed(language.voice_settings.speed || 1.0);
+          setKokoroSpeed(language.voice_settings.speed ?? 1.0);
         }
       }
 
@@ -360,16 +370,16 @@ export const VoiceSettingsDialog = ({
                   <Label>Quality Model</Label>
                   <Select
                     value={openaiModel}
-                    onValueChange={(value: 'tts-1' | 'tts-1-hd' | 'gpt-4o-mini-audio-preview') => setOpenaiModel(value)}
+                    onValueChange={(value: 'tts-1' | 'tts-1-hd' | 'gpt-4o-mini-tts') => setOpenaiModel(value)}
                   >
                     <SelectTrigger className="mt-2">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="gpt-4o-mini-audio-preview">
+                      <SelectItem value="gpt-4o-mini-tts">
                         <div className="flex flex-col">
-                          <span className="font-medium">gpt-4o-mini-audio-preview</span>
-                          <span className="text-xs text-muted-foreground">Advanced audio model with precise system instructions</span>
+                          <span className="font-medium">gpt-4o-mini-tts</span>
+                          <span className="text-xs text-muted-foreground">Current OpenAI TTS model with native speed + instructions support</span>
                         </div>
                       </SelectItem>
                       <SelectItem value="tts-1-hd">
@@ -389,7 +399,7 @@ export const VoiceSettingsDialog = ({
                 </div>
 
                 {/* OpenAI Instructions (Only for GPT-4o audio) */}
-                {openaiModel === 'gpt-4o-mini-audio-preview' && (
+                {openaiModel === 'gpt-4o-mini-tts' && (
                   <div>
                     <Label>Instructions (Prompt)</Label>
                     <textarea

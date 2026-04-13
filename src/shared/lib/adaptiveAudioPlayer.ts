@@ -13,6 +13,7 @@ export class AdaptiveAudioPlayer {
   private gainNode: GainNode | null = null;
   private compressorNode: DynamicsCompressorNode | null = null;
   private analyserNode: AnalyserNode | null = null;
+  private delayNode: DelayNode | null = null;
   private monitorBuffer: Float32Array | null = null;
   private rafId: number | null = null;
   private baseVolume = 1;
@@ -42,10 +43,18 @@ export class AdaptiveAudioPlayer {
     //   await this.applyLeadingSilenceTrim(audio, url, maxTrimSeconds);
     // }
 
+    const currentAudio = audio;
     const handleEnded = () => {
-      this.cleanupNodes();
-      this.audio = null;
-      onEnded?.();
+      // The audio element finishes before the delay node clears its buffer.
+      // Wait for the delay time (300ms) plus a tiny margin before cleaning up.
+      setTimeout(() => {
+        // Only run if this is still the active audio session
+        if (this.audio !== currentAudio) return;
+        
+        this.cleanupNodes();
+        this.audio = null;
+        onEnded?.();
+      }, 350); 
     };
 
     audio.onended = handleEnded;
@@ -58,6 +67,7 @@ export class AdaptiveAudioPlayer {
       // Fallback if WebAudio graph can't be created (e.g. CORS restriction)
       this.cleanupNodes();
       this.gainNode = null;
+      this.delayNode = null;
       audio.volume = volume;
       await audio.play();
     }
@@ -114,8 +124,16 @@ export class AdaptiveAudioPlayer {
     analyser.fftSize = 1024;
     analyser.smoothingTimeConstant = 0.85;
 
-    source.connect(gain);
-    source.connect(analyser);
+    // Add a conservative delay to prevent mobile DACs/Bluetooth from clipping the very beginning 
+    // of short clips (like single words) while they wake up from power-saving silence.
+    const delay = context.createDelay(1.0);
+    delay.delayTime.value = 0.3; // 300ms
+
+    source.connect(delay);
+    delay.connect(gain);
+    // Connect analyser before the delay so AutoGain acts with a 300ms lookahead!
+    source.connect(analyser); 
+    
     gain.connect(compressor);
     compressor.connect(context.destination);
 
@@ -123,6 +141,7 @@ export class AdaptiveAudioPlayer {
     audio.playbackRate = playbackRate;
 
     this.sourceNode = source;
+    this.delayNode = delay;
     this.gainNode = gain;
     this.compressorNode = compressor;
     this.analyserNode = analyser;
@@ -176,11 +195,13 @@ export class AdaptiveAudioPlayer {
     }
 
     this.sourceNode?.disconnect();
+    this.delayNode?.disconnect();
     this.gainNode?.disconnect();
     this.compressorNode?.disconnect();
     this.analyserNode?.disconnect();
 
     this.sourceNode = null;
+    this.delayNode = null;
     this.gainNode = null;
     this.compressorNode = null;
     this.analyserNode = null;

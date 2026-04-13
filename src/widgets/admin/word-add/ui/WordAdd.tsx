@@ -10,6 +10,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Loader2, Trash2, Search, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
+const OPENAI_DEFAULT_VOICE_SETTINGS = {
+  model: 'gpt-4o-mini-tts' as const,
+  speed: 0.92,
+  instruction: 'Speak like a professional male announcer with a low, warm, confident tone. Keep the diction crisp, clean, and precise. Sound natural, lively, and studio-quality. Pronounce only the provided word, with no added words or spelling.',
+};
+
 const getAudioFileMeta = (blob: Blob) => {
   const mimeType = blob.type || 'audio/mpeg';
   if (mimeType.includes('wav')) {
@@ -188,7 +194,7 @@ export const WordAdd = () => {
       if (supportsAutoAudio && selectedLanguageData?.voice_id) {
         try {
           // Get TTS provider and voice settings
-          const provider: TTSProviderType = (selectedLanguageData.tts_provider as TTSProviderType) || 'elevenlabs';
+          const provider: TTSProviderType = (selectedLanguageData.tts_provider as TTSProviderType) || 'openai';
           let voiceId = selectedLanguageData.voice_id;
           let voiceSettings = selectedLanguageData.voice_settings;
 
@@ -210,7 +216,9 @@ export const WordAdd = () => {
 
           // Use default settings if none available
           if (!voiceSettings) {
-            voiceSettings = await ttsManager.getDefaultSettings(provider);
+            voiceSettings = provider === 'openai'
+              ? OPENAI_DEFAULT_VOICE_SETTINGS
+              : await ttsManager.getDefaultSettings(provider);
           }
 
           console.log('🎙️ Generating audio with Provider:', provider);
@@ -304,7 +312,7 @@ export const WordAdd = () => {
     setIsRegenerating(wordId);
     try {
       // Get TTS provider and voice settings
-      const provider: TTSProviderType = (selectedLanguageData.tts_provider as TTSProviderType) || 'elevenlabs';
+      const provider: TTSProviderType = (selectedLanguageData.tts_provider as TTSProviderType) || 'openai';
       let voiceId = selectedLanguageData.voice_id;
       let voiceSettings = selectedLanguageData.voice_settings;
 
@@ -320,7 +328,9 @@ export const WordAdd = () => {
       }
 
       if (!voiceSettings) {
-        voiceSettings = await ttsManager.getDefaultSettings(provider);
+        voiceSettings = provider === 'openai'
+          ? OPENAI_DEFAULT_VOICE_SETTINGS
+          : await ttsManager.getDefaultSettings(provider);
       }
 
       const ttsConfig: TTSProviderConfig = {
@@ -382,7 +392,7 @@ export const WordAdd = () => {
 
     try {
       // Get TTS provider and voice settings
-      const provider: TTSProviderType = (selectedLanguageData.tts_provider as TTSProviderType) || 'elevenlabs';
+      const provider: TTSProviderType = (selectedLanguageData.tts_provider as TTSProviderType) || 'openai';
       let voiceId = selectedLanguageData.voice_id;
       let voiceSettings = selectedLanguageData.voice_settings;
 
@@ -398,7 +408,9 @@ export const WordAdd = () => {
       }
 
       if (!voiceSettings) {
-        voiceSettings = await ttsManager.getDefaultSettings(provider);
+        voiceSettings = provider === 'openai'
+          ? OPENAI_DEFAULT_VOICE_SETTINGS
+          : await ttsManager.getDefaultSettings(provider);
       }
 
       const ttsConfig: TTSProviderConfig = {

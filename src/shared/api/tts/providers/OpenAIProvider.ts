@@ -54,8 +54,9 @@ const AVAILABLE_VOICES: TTSVoice[] = [
 
 // Default settings
 const DEFAULT_SETTINGS: OpenAITTSSettings = {
-  model: 'tts-1-hd',
-  speed: 1.0,
+  model: 'gpt-4o-mini-tts',
+  speed: 0.92,
+  instruction: 'Speak like a professional male announcer with a low, warm, confident tone. Keep the diction crisp, clean, and precise. Sound natural, lively, and studio-quality. Pronounce only the provided word, with no added words or spelling.',
 };
 
 const DEFAULT_VOICE_ID = 'onyx';
@@ -84,54 +85,23 @@ export class OpenAITTSProvider implements ITTSProvider {
       throw new TTSProviderNotConfiguredError('openai');
     }
 
-    const openAISettings = settings as OpenAITTSSettings;
-    const isGptAudio = openAISettings.model.includes('gpt-4o');
-    const apiUrl = isGptAudio ? 'https://api.openai.com/v1/chat/completions' : OPENAI_API_URL;
+    const openAISettings = this.normalizeSettings(settings);
 
     try {
-      let body;
-
-      if (isGptAudio) {
-        // Chat Completions API for new Audio Models
-        body = {
-          model: openAISettings.model,
-          modalities: ["text", "audio"],
-          audio: {
-            voice: voiceId,
-            format: "wav"
-          },
-          messages: [
-            {
-              role: "system",
-              content: `You are a professional voice talent recording a vocabulary list for a dictionary application. 
-Speak with a natural, clear, and confident human voice.
-Your task is to pronounce the word provided by the user beautifully and naturally.
-
-CRITICAL RULES:
-1. ONLY speak the exact word provided. 
-2. DO NOT add any extra words, conversational filler, greetings, or explanations (e.g., do not say "The word is").
-3. DO NOT spell the word out by its letters. Pronounce it as a whole word.
-${openAISettings.instruction ? '\nADDITIONAL INSTRUCTIONS:\n' + openAISettings.instruction : ''}`
-            },
-            {
-              role: "user",
-              content: text
+      const body = {
+        model: openAISettings.model,
+        input: text,
+        voice: voiceId,
+        speed: openAISettings.speed,
+        response_format: 'wav',
+        ...(openAISettings.instruction
+          ? {
+              instructions: openAISettings.instruction,
             }
-          ]
-        };
-      } else {
-        // Standard TTS API 
-        // Output as WAV for uncompressed cleaner audio.
-        body = {
-          model: openAISettings.model,
-          input: text,
-          voice: voiceId,
-          speed: openAISettings.speed,
-          response_format: 'wav',
-        };
-      }
+          : {}),
+      };
 
-      const response = await fetch(apiUrl, {
+      const response = await fetch(OPENAI_API_URL, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
@@ -143,29 +113,6 @@ ${openAISettings.instruction ? '\nADDITIONAL INSTRUCTIONS:\n' + openAISettings.i
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
-      }
-
-      if (isGptAudio) {
-        // Extract base64 audio data from chat completion response and convert to Blob
-        const data = await response.json();
-        const base64Audio = data.choices[0]?.message?.audio?.data;
-        if (!base64Audio) {
-          throw new Error('No audio data received from GPT-4o audio API');
-        }
-
-        // Convert base64 to Blob
-        const byteCharacters = atob(base64Audio);
-        const byteArrays = [];
-        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-          const slice = byteCharacters.slice(offset, offset + 512);
-          const byteNumbers = new Array(slice.length);
-          for (let i = 0; i < slice.length; i++) {
-            byteNumbers[i] = slice.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          byteArrays.push(byteArray);
-        }
-        return new Blob(byteArrays, { type: 'audio/wav' });
       }
 
       return await response.blob();
@@ -200,15 +147,20 @@ ${openAISettings.instruction ? '\nADDITIONAL INSTRUCTIONS:\n' + openAISettings.i
 
     // Determine target model
     let model = DEFAULT_SETTINGS.model;
-    if (['tts-1', 'tts-1-hd', 'gpt-4o-mini-audio-preview'].includes(settings.model)) {
+    if (settings.model === 'gpt-4o-mini-audio-preview') {
+      model = 'gpt-4o-mini-tts';
+    } else if (['tts-1', 'tts-1-hd', 'gpt-4o-mini-tts'].includes(settings.model)) {
       model = settings.model;
     }
 
+    const parsedSpeed = Number(settings.speed);
+    const finalSpeed = !isNaN(parsedSpeed) && parsedSpeed > 0
+      ? Math.max(0.25, Math.min(4.0, parsedSpeed))
+      : DEFAULT_SETTINGS.speed;
+
     return {
       model,
-      speed: typeof settings.speed === 'number'
-        ? Math.max(0.25, Math.min(4.0, settings.speed))
-        : DEFAULT_SETTINGS.speed,
+      speed: finalSpeed,
       instruction: typeof settings.instruction === 'string'
         ? settings.instruction
         : undefined,

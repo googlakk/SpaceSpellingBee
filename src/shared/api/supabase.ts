@@ -63,10 +63,9 @@ export interface AppConfig {
   default_voice_id: string;
   default_voice_name: string;
   default_voice_settings: {
-    stability: number;
-    similarity_boost: number;
-    style: number;
-    use_speaker_boost: boolean;
+    model: 'tts-1' | 'tts-1-hd' | 'gpt-4o-mini-tts';
+    speed: number;
+    instruction?: string;
   };
   created_at: string;
   updated_at: string;

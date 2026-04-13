@@ -13,6 +13,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { useEffect } from 'react';
 
+const OPENAI_DEFAULT_VOICE_SETTINGS = {
+  model: 'gpt-4o-mini-tts' as const,
+  speed: 0.92,
+  instruction: 'Speak like a professional male announcer with a low, warm, confident tone. Keep the diction crisp, clean, and precise. Sound natural, lively, and studio-quality. Pronounce only the provided word, with no added words or spelling.',
+};
+
 const getAudioFileMeta = (blob: Blob) => {
   const mimeType = blob.type || 'audio/mpeg';
   if (mimeType.includes('wav')) {
@@ -204,7 +210,7 @@ export const WordsImport = () => {
         if (supportsAutoAudio && selectedLanguageData.voice_id) {
           try {
             // Get TTS provider and voice settings
-            const provider: TTSProviderType = (selectedLanguageData.tts_provider as TTSProviderType) || 'elevenlabs';
+            const provider: TTSProviderType = (selectedLanguageData.tts_provider as TTSProviderType) || 'openai';
             let voiceSettings = selectedLanguageData.voice_settings;
 
             // If language doesn't have specific voice settings, try to get from global config
@@ -225,7 +231,9 @@ export const WordsImport = () => {
 
             // Use default settings if none available
             if (!voiceSettings) {
-              voiceSettings = await ttsManager.getDefaultSettings(provider);
+              voiceSettings = provider === 'openai'
+                ? OPENAI_DEFAULT_VOICE_SETTINGS
+                : await ttsManager.getDefaultSettings(provider);
             }
 
             console.log(`🎙️ Generating audio for new word: "${word}" using ${provider}`);

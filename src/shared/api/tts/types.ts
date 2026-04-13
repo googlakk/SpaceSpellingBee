@@ -18,9 +18,9 @@ export interface TTSVoice {
 
 // Provider-specific settings types
 export interface OpenAITTSSettings {
-  model: 'tts-1' | 'tts-1-hd' | 'gpt-4o-mini-audio-preview';
+  model: 'tts-1' | 'tts-1-hd' | 'gpt-4o-mini-tts';
   speed: number; // 0.25 to 4.0
-  instruction?: string; // For gpt-4o-audio models
+  instruction?: string; // For OpenAI TTS instruction tuning
 }
 
 // ElevenLabs model type

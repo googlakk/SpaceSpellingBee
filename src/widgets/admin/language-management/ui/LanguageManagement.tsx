@@ -8,6 +8,12 @@ import { Plus, Loader2, Trash2, ToggleLeft, ToggleRight, Volume2 } from 'lucide-
 import { toast } from 'sonner';
 import { VoiceSettingsDialog } from './VoiceSettingsDialog';
 
+const OPENAI_DEFAULT_VOICE_SETTINGS = {
+  model: 'gpt-4o-mini-tts' as const,
+  speed: 0.92,
+  instruction: 'Speak like a professional male announcer with a low, warm, confident tone. Keep the diction crisp, clean, and precise. Sound natural, lively, and studio-quality. Pronounce only the provided word, with no added words or spelling.',
+};
+
 export const LanguageManagement = () => {
   const [languages, setLanguages] = useState<Language[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,6 +71,10 @@ export const LanguageManagement = () => {
         native_name: newLanguage.native_name,
         flag_emoji: newLanguage.flag_emoji,
         is_active: true,
+        tts_provider: 'openai',
+        voice_id: 'onyx',
+        voice_name: 'Onyx',
+        voice_settings: OPENAI_DEFAULT_VOICE_SETTINGS,
       });
 
       if (error) throw error;
